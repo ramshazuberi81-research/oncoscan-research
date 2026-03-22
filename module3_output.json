@@ -1,0 +1,75 @@
+{
+  "patient_id": "PATIENT_001",
+  "cancer_type": "gastric",
+  "stage": "III",
+  "ecog": 1,
+  "markers": {
+    "MSI_H": false,
+    "HER2": true,
+    "KRAS": false,
+    "BRAF": false,
+    "BRCA": false,
+    "PDL1_CPS": 8
+  },
+  "protocol": {
+    "primary": "Perioperative FLOT4 + D2 gastrectomy",
+    "adjuvant": "FLOT4 x4 cycles pre-op + surgery + FLOT4 x4 cycles post-op",
+    "regimens": [
+      "FLOT4 (standard)",
+      "CAPOX (alternative)",
+      "Nivolumab + chemotherapy (HER2-negative, CPS\u22655)",
+      "Trastuzumab + CAPOX (HER2+ first-line \u2014 ToGA)",
+      "Trastuzumab deruxtecan (T-DXd, 2nd line \u2014 DESTINY-Gastric01)",
+      "Nivolumab + FOLFOX/CAPOX (CPS=8 \u22655 \u2014 CheckMate-649)"
+    ],
+    "guideline": "NCCN Gastric v2.2024 / ESMO 2022 / CheckMate-649",
+    "notes": "HER2 testing mandatory. PD-L1 CPS score guides immunotherapy eligibility.",
+    "ecog_note": "ECOG 1 \u2014 standard treatment. Monitor closely for toxicity.",
+    "genomic_notes": [
+      "\ud83e\uddec HER2 positive \u2014 trastuzumab + chemotherapy (ToGA trial, OS benefit). Stage IV: trastuzumab + CAPOX or 5-FU/cisplatin (first-line standard). Second-line: trastuzumab deruxtecan (T-DXd, DESTINY-Gastric01).",
+      "\ud83e\uddec PD-L1 CPS = 8 (\u22655) \u2014 nivolumab + chemotherapy indicated (CheckMate-649). OS benefit demonstrated for CPS\u22655. Consider pembrolizumab + chemo (KEYNOTE-590)."
+    ]
+  },
+  "clinical_trials": [
+    {
+      "nct_id": "NCT05769725",
+      "title": "A Study to Evaluate Serplulimab in Combination With Docetaxel +S-1 VS. Docetaxel +S-1 as Adjuvant Treatment Therapy in S",
+      "phase": "PHASE2",
+      "sponsor": "RenJi Hospital",
+      "status": "N/A",
+      "url": "https://clinicaltrials.gov/study/NCT05769725"
+    },
+    {
+      "nct_id": "NCT04871412",
+      "title": "The Thoracic Peri-Operative Integrative Surgical Care Evaluation Trial - Stage III",
+      "phase": "PHASE3",
+      "sponsor": "Ottawa Hospital Research Institute",
+      "status": "N/A",
+      "url": "https://clinicaltrials.gov/study/NCT04871412"
+    },
+    {
+      "nct_id": "NCT07023315",
+      "title": "A Phase III Clinical Study of Cadonilimab Plus SOX as Perioperative Treatment for Patients With Resectable G/GEJ Adenoca",
+      "phase": "PHASE3",
+      "sponsor": "Akeso",
+      "status": "N/A",
+      "url": "https://clinicaltrials.gov/study/NCT07023315"
+    },
+    {
+      "nct_id": "NCT05253716",
+      "title": "Immunonutritional Supplement After Total Gastrectomy in Patients With Stage III Gastric Cancer",
+      "phase": "NA",
+      "sponsor": "Jinling Hospital, China",
+      "status": "N/A",
+      "url": "https://clinicaltrials.gov/study/NCT05253716"
+    },
+    {
+      "nct_id": "NCT02366819",
+      "title": "Genetic Analysis-Guided Irinotecan Hydrochloride Dosing of mFOLFIRINOX in Treating Patients With Locally Advanced Gastro",
+      "phase": "PHASE4",
+      "sponsor": "University of Chicago",
+      "status": "N/A",
+      "url": "https://clinicaltrials.gov/study/NCT02366819"
+    }
+  ]
+}
