@@ -1,17 +1,17 @@
-# OncosenseAI — Clinical AI for Early Abdominal Cancer Detection
+OncosenseAI — Clinical AI for Early Abdominal Cancer Detection
 
 [![Status](https://img.shields.io/badge/Status-Research%20Prototype-blue?style=for-the-badge)](https://github.com/ramshazuberi81-research/oncoscan-research)
 [![Python](https://img.shields.io/badge/Python-3.10+-green?style=for-the-badge&logo=python)](https://python.org)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 [![SEER](https://img.shields.io/badge/SEER-Validated%20n%3D500-brightgreen?style=for-the-badge)](https://seer.cancer.gov)
-[![Module](https://img.shields.io/badge/Stage-Module%201%20Complete-teal?style=for-the-badge)]()
+[![Module](https://img.shields.io/badge/Stage-Module%202%20Complete-teal?style=for-the-badge)]()
 
-> *Symptom Triage · Imaging AI · Precision Treatment Matching*  
-> *From first symptom to treatment recommendation — one integrated platform*
+> Symptom Triage · Visual AI Diagnostics · Precision Treatment Matching  
+> From first symptom to treatment recommendation — one integrated platform
 
 ---
 
-## The Problem
+The Problem
 
 ```
          HOUSTON          LONDON           KARACHI          NAIROBI
@@ -31,9 +31,9 @@
 
 ---
 
-## Why It Matters — Real Numbers from SEER (n=500)
+ Why It Matters — Real Numbers from SEER (n=500)
 
-> These are **real outcomes from validated SEER data**, not estimates.
+> These are real outcomes from validated SEER data, not estimates.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -51,38 +51,41 @@
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
-**OncosenseAI exists to close that gap — at the moment a patient first describes symptoms.**
+OncosenseAI exists to close that gap — at the moment a patient first describes symptoms.
 
 ---
 
-## Platform Architecture — Three Modules
+Platform Architecture — Three Modules
 
 ```
 ╔══════════════════╗     ╔══════════════════╗     ╔══════════════════╗
 ║                  ║     ║                  ║     ║                  ║
 ║    MODULE 1      ║────▶║    MODULE 2      ║────▶║    MODULE 3      ║
 ║                  ║     ║                  ║     ║                  ║
-║  SYMPTOM ENGINE  ║     ║  IMAGING AI      ║     ║  TREATMENT       ║
-║                  ║     ║                  ║     ║  MATCHER         ║
-║  • 17 clinical   ║     ║  • CT/MRI/US     ║     ║                  ║
-║    variables     ║     ║    analysis      ║     ║  • NCCN/NICE/WHO ║
-║  • LR+GB+RF      ║     ║  • CNN lesion    ║     ║    guidelines    ║
-║    ensemble      ║     ║    detection     ║     ║  • Genomic       ║
-║  • SEER-         ║     ║  • TCIA trained  ║     ║    matching      ║
-║    validated     ║     ║                  ║     ║  • Trial         ║
-║                  ║     ║                  ║     ║    eligibility   ║
-║  ✅ COMPLETE     ║     ║  🔨 IN PROGRESS  ║     ║  📋 PLANNED      ║
-╚══════════════════╝     ╚══════════════════╝     ╚══════════════════╝
+║  SYMPTOM ENGINE  ║     ║  VISUAL AI       ║     ║  TREATMENT       ║
+║                  ║     ║  DIAGNOSTICS     ║     ║  MATCHER         ║
+║  • 17 clinical   ║     ║                  ║     ║                  ║
+║    variables     ║     ║  • Stool image   ║     ║  • NCCN/NICE/WHO ║
+║  • LR+GB+RF      ║     ║    analysis      ║     ║    guidelines    ║
+║    ensemble      ║     ║  • Urine image   ║     ║  • Genomic       ║
+║  • SEER-         ║     ║    analysis      ║     ║    matching      ║
+║    validated     ║     ║  • Abdomen image ║     ║  • Trial         ║
+║                  ║     ║    analysis      ║     ║    eligibility   ║
+║  ✅ COMPLETE     ║     ║  • OpenCV-based  ║     ║                  ║
+╚══════════════════╝     ║  • No API needed ║     ║  📋 PLANNED      ║
+                         ║                  ║     ╚══════════════════╝
+                         ║  ✅ COMPLETE     ║
+                         ╚══════════════════╝
 ```
 
 ---
 
-## SEER Validation Results — Real Data (n=500)
+ SEER Validation Results — Real Data (n=500)
 
 > Validated on SEER Cancer Registry data. Pancreas (n=264), Stomach (n=146), Esophagus (n=90).  
 > Diagnosis years 2000–2022.
 
-### Survival Analysis
+Survival Analysis
 
 ![KM Curves by Site, Stage, and Race](fig1_km_curves.png)
 
@@ -90,7 +93,7 @@
 
 ![Deep Dive: Site × Stage Analysis](fig3_deep_dive.png)
 
-### Model Performance (5-Fold Cross-Validation)
+ Model Performance (5-Fold Cross-Validation)
 
 ```
 Task: 12-month mortality prediction
@@ -110,7 +113,7 @@ At 95% sensitivity threshold (must not miss cancer deaths):
   NPV:          0.853  ← 85% of negatives correctly reassured
 ```
 
-### Survival Outcomes by Cancer Site
+ Survival Outcomes by Cancer Site
 
 ```
 ┌────────────┬──────┬────────┬──────────┬──────────┬───────────────────────────────────┐
@@ -122,7 +125,7 @@ At 95% sensitivity threshold (must not miss cancer deaths):
 └────────────┴──────┴────────┴──────────┴──────────┴───────────────────────────────────┘
 ```
 
-### The Stage Shift Effect
+The Stage Shift Effect
 
 ```
 This is why OncosenseAI exists.
@@ -143,9 +146,9 @@ OncosenseAI is the tool that catches them sooner.
 
 ---
 
-## Module 1 — How It Works
+Module 1 — Symptom Intelligence Engine ✅
 
-### Input Features (17 variables)
+ Input Features (17 variables)
 
 ```
 DEMOGRAPHICS          ALARM SYMPTOMS                CLINICAL CONTEXT
@@ -163,7 +166,7 @@ DEMOGRAPHICS          ALARM SYMPTOMS                CLINICAL CONTEXT
                       • Nausea / vomiting     🟡
 ```
 
-### Model Architecture
+ Model Architecture
 
 ```
                     ┌─────────────────────────────────┐
@@ -197,7 +200,7 @@ DEMOGRAPHICS          ALARM SYMPTOMS                CLINICAL CONTEXT
                follow-up     referral         referral
 ```
 
-### Top Predictors (SHAP — SEER Validated)
+ Top Predictors (SHAP — SEER Validated)
 
 ```
   Stage at presentation  ████████████████████████  most important
@@ -214,7 +217,53 @@ DEMOGRAPHICS          ALARM SYMPTOMS                CLINICAL CONTEXT
 
 ---
 
-## Research Methodology
+Module 2 — Visual AI Diagnostics ✅
+
+> Approach: Rule-based image analysis using OpenCV + colour detection  
+
+ What It Analyses
+
+```
+Patient uploads photo(s)
+        │
+        ├── Stool   → colour (red/melanotic/pale), blood detection,
+        │             consistency via texture, Bristol scale estimate
+        │
+        ├── Urine   → haematuria (red/pink), bilirubinuria (dark amber),
+        │             froth detection (proteinuria), clarity
+        │
+        └── Abdomen → jaundice (yellow skin via LAB colour space),
+                      distension (contour fill ratio)
+        │
+        ▼
+Concern Level (Low 🟢 / Moderate 🟡 / High 🔴)
+        │
+        ▼
+module2_output.json → feeds Module 1 combined risk score
+```
+
+Sample Output
+
+```
+  STOOL       🟢 Low      — No significant abnormal features
+  URINE       🟡 Moderate — Frothy appearance → possible proteinuria
+  ABDOMEN     🟢 Low      — No significant abnormal features
+
+  Overall Visual Score  : 0.233
+  Highest Concern Level : 🟡 Moderate
+```
+
+ Module 1 Integration
+
+```python
+# Visual concern score feeds directly into combined risk calculation
+combined_risk = symptom_score + (visual_score × 0.20)
+# High visual concern (flag_urgent=True) auto-escalates to Urgent tier
+```
+
+---
+
+ Research Methodology
 
 ```
 PHASE 1 ✅                   PHASE 2 🔨                PHASE 3 📋
@@ -230,7 +279,7 @@ Validation:                  Output:                    Regulatory:
   AUROC computed ✅            retrospective             CE Mark EU
   SHAP explainability ✅       concordance               MDR pathway
   KM survival curves ✅        SUS usability
-                               Peer-reviewed pub
+  Visual AI pipeline ✅        Peer-reviewed pub
 
 STATUS: ✅ Real data          STATUS: 🔨 Seeking          STATUS: 📋 Planned
            validated                  IRB partner
@@ -238,7 +287,7 @@ STATUS: ✅ Real data          STATUS: 🔨 Seeking          STATUS: 📋 Planne
 
 ---
 
-## Competitive Landscape
+ Competitive Landscape
 
 ```
                      Symptom   Imaging   Treatment   Primary     Cost
@@ -258,14 +307,18 @@ getting patients to the right test faster and cheaper.
 
 ---
 
-## Repository Structure
+ Repository Structure
 
 ```
 oncoscan-research/
 │
 ├── 📓 OncoScan_Colab_RunThis.ipynb
-│      Complete training + evaluation pipeline
+│      Module 1 — Complete training + evaluation pipeline
 │      Open in Google Colab — no setup needed
+│
+├── 📓 OncosenseAI_Module2_OpenCV.ipynb
+│      Module 2 — Visual AI diagnostics (OpenCV, no API key)
+│      Upload images → get concern level → outputs module2_output.json
 │
 ├── 🌐 app.py.zip
 │      Streamlit demo — live clinical interface
@@ -285,40 +338,53 @@ oncoscan-research/
 
 ---
 
-## Run in Google Colab
+ Run in Google Colab
 
+Module 1 — Symptom Engine:
 ```
 Step 1 — Go to colab.research.google.com
-Step 2 — File → Upload notebook
-Step 3 — Select OncoScan_Colab_RunThis.ipynb
-Step 4 — Runtime → Run all
-Step 5 — Full results in ~3 minutes ✅
+Step 2 — File → Upload notebook → OncoScan_Colab_RunThis.ipynb
+Step 3 — Runtime → Run all
+Step 4 — Full results in ~3 minutes ✅
+```
+
+Module 2 — Visual AI:
+```
+Step 1 — Go to colab.research.google.com
+Step 2 — File → Upload notebook → OncosenseAI_Module2_OpenCV.ipynb
+Step 3 — Runtime → Run all
+Step 4 — Upload stool / urine / abdomen images when prompted
+Step 5 — Download module2_output.json for Module 1 integration ✅
 ```
 
 ---
 
-## Roadmap
+ Roadmap
 
 ```
-2025 Q1  ──●── ✅ Module 1 complete — symptom engine built
+2026 Q1  ──●── ✅ Module 1 complete — symptom engine built
              │
-2025 Q2  ────●── ✅ SEER real data validation (n=500, AUROC 0.790)
+2026 Q1  ────●── ✅ SEER real data validation (n=500, AUROC 0.790)
              │
-2025 Q3  ────●── 🔨 Module 2 — Imaging AI (TCIA dataset)
+2026 Q1  ────●── ✅ Module 2 complete — Visual AI diagnostics (OpenCV)
+             │      Stool · urine · abdomen image analysis
+             │      Concern level → feeds Module 1 risk score
+             │
+2026 Q2  ────●── 🔨 IRB pilot — 100 patient prospective cohort
              │      MIMIC-IV clinical notes NLP
              │
-2025 Q4  ────●── 📋 IRB pilot — 100 patient prospective cohort
+2026 Q3  ────●── 📋 MedRxiv preprint submitted
              │
-2026 Q1  ────●── 📋 MedRxiv preprint submitted
+2026 Q3  ────●── 📋 Module 3 — Treatment Matcher
+             │      NCCN/NICE/WHO guideline mapping
+             │      Genomic marker integration
              │
-2026 Q2  ────●── 📋 Module 3 — Treatment Matcher
-             │
-2026 Q3  ────●── 📋 FDA 510(k) pre-submission meeting
+2026 Q4  ────●── 📋 FDA 510(k) pre-submission meeting
 ```
 
 ---
 
-## Seeking Collaboration
+ Seeking Collaboration
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -343,18 +409,18 @@ Step 5 — Full results in ~3 minutes ✅
 
 ---
 
-## Data Sources
+ Data Sources
 
 | Dataset | Status | What it contributes |
 |---------|--------|---------------------|
 | SEER | ✅ Active — n=500 validated | 50yr US cancer outcomes, survival, stage |
 | MIMIC-IV | 🔨 Application in progress | Real hospital clinical notes, NLP |
 | TCGA | ✅ Open access | Cancer genomics + clinical data |
-| TCIA | 📋 Planned | Cancer imaging archive (Module 2) |
+| TCIA | 📋 Planned | Cancer imaging archive (Module 2 Phase B) |
 
 ---
 
-## Disclaimer
+ Disclaimer
 
 ```
 ╔═══════════════════════════════════════════════════════════╗
@@ -369,13 +435,13 @@ Step 5 — Full results in ~3 minutes ✅
 
 ---
 
-## Citation
+ Citation
 
 ```bibtex
 @software{oncosenseai2025,
   title  = {OncosenseAI: Integrated Clinical AI for Early Abdominal Cancer Detection},
   author = {Zuberi, Ramsha},
-  year   = {2025},
+  year   = {2026},
   url    = {https://github.com/ramshazuberi81-research/oncoscan-research}
 }
 ```
