@@ -1,0 +1,114 @@
+{
+  "module": "2_visual_ai",
+  "version": "2.1",
+  "method": "rule_based_opencv",
+  "images_analysed": [
+    "stool",
+    "urine",
+    "abdomen"
+  ],
+  "findings": {
+    "stool": {
+      "image_type": "stool",
+      "image_quality": "good",
+      "colour": {
+        "observed": "pale/white",
+        "clinically_significant": false,
+        "notes": "Dominant RGB: (231,245,255)"
+      },
+      "consistency": {
+        "observed": "estimated from texture",
+        "bristol_scale_estimate": 2,
+        "notes": "Texture variance: 2511.4"
+      },
+      "blood": {
+        "visible": false,
+        "character": "none",
+        "notes": "Red pixel fraction: 0.015"
+      },
+      "abnormal_features": [],
+      "concern_level": "Low",
+      "concern_rationale": "No significant abnormal features detected.",
+      "recommended_action": "Routine follow-up",
+      "provided": true
+    },
+    "urine": {
+      "image_type": "urine",
+      "image_quality": "good",
+      "colour": {
+        "observed": "pale/white",
+        "clinically_significant": true,
+        "notes": "Dominant RGB: (231,236,235)"
+      },
+      "clarity": {
+        "observed": "turbid",
+        "notes": "Pale fraction: 0.145"
+      },
+      "froth": {
+        "present": true,
+        "notes": "Froth score: 552.3"
+      },
+      "visible_blood": {
+        "present": false,
+        "notes": "Red fraction: 0.013"
+      },
+      "bilirubinuria_signs": {
+        "suspected": false,
+        "notes": "Amber fraction: 0.078"
+      },
+      "concern_level": "Moderate",
+      "concern_rationale": "Frothy appearance detected \u2014 may indicate proteinuria requiring further investigation.",
+      "recommended_action": "Urine dipstick for protein + renal function tests",
+      "provided": true
+    },
+    "abdomen": {
+      "image_type": "abdomen",
+      "image_quality": "good",
+      "distension": {
+        "present": false,
+        "grade": "none",
+        "notes": "Estimated from contour fill ratio"
+      },
+      "ascites_signs": {
+        "suspected": false,
+        "features_observed": [],
+        "notes": ""
+      },
+      "visible_mass": {
+        "present": false,
+        "location": "none",
+        "notes": "Requires clinical examination for confirmation"
+      },
+      "caput_medusae": {
+        "present": false,
+        "notes": "Cannot reliably detect from photograph alone"
+      },
+      "skin_changes": {
+        "jaundice_visible": false,
+        "other": "pale/white",
+        "notes": "Yellow fraction: 0.009"
+      },
+      "concern_level": "Low",
+      "concern_rationale": "No significant abnormal visual features detected.",
+      "recommended_action": "Routine follow-up",
+      "provided": true
+    }
+  },
+  "concern_scores": {
+    "stool": 0.1,
+    "urine": 0.5,
+    "abdomen": 0.1
+  },
+  "overall_visual_score": 0.233,
+  "highest_concern_level": "Moderate",
+  "module1_integration": {
+    "visual_concern_score": 0.233,
+    "highest_concern": "Moderate",
+    "flag_urgent": false,
+    "stool_blood_visible": false,
+    "ascites_suspected": false,
+    "jaundice_visible": false,
+    "bilirubinuria_suspected": false,
+    "haematuria": false
+  }
+}
