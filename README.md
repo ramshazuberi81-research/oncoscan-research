@@ -6,9 +6,8 @@ OncosenseAI — Clinical AI for Early Abdominal Cancer Detection
 [![SEER](https://img.shields.io/badge/SEER-Validated%20n%3D500-brightgreen?style=for-the-badge)](https://seer.cancer.gov)
 [![Module](https://img.shields.io/badge/Stage-Module%204%20Complete-teal?style=for-the-badge)]()
 
-> Symptom Triage · Visual AI Diagnostics · Precision Treatment Matching
+> Symptom Triage · Visual AI Diagnostics · Precision Treatment Matching · Clinical Reporting
 > From first symptom to treatment recommendation — one integrated platform
-
 
  The Problem
 
@@ -26,9 +25,10 @@ OncosenseAI — Clinical AI for Early Abdominal Cancer Detection
             |                |                |                |
            💔               💔               💔               💔
                     LATE STAGE — Treatment options limited
+```
 
 
- Why It Matters — Real Numbers from SEER (n=500)
+Why It Matters — Real Numbers from SEER (n=500)
 
 > These are real outcomes from validated SEER data, not estimates.
 
@@ -51,7 +51,8 @@ OncosenseAI — Clinical AI for Early Abdominal Cancer Detection
 OncosenseAI exists to close that gap — at the moment a patient first describes symptoms.
 
 
- Platform Architecture — Three Modules
+
+ Platform Architecture — Four Modules
 
 
 ╔══════════════════╗     ╔══════════════════╗     ╔══════════════════╗     ╔══════════════════╗
@@ -73,12 +74,13 @@ OncosenseAI exists to close that gap — at the moment a patient first describes
                          ║  ✅ COMPLETE     ║
                          ╚══════════════════╝
 ```
+
  SEER Validation Results — Real Data (n=500)
 
-> Validated on SEER Cancer Registry data. Pancreas (n=264), Stomach (n=146), Esophagus (n=90).  
+> Validated on SEER Cancer Registry data. Pancreas (n=264), Stomach (n=146), Esophagus (n=90).
 > Diagnosis years 2000–2022.
 
- Survival Analysis
+Survival Analysis
 
 ![KM Curves by Site, Stage, and Race](fig1_km_curves.png)
 
@@ -105,9 +107,8 @@ At 95% sensitivity threshold (must not miss cancer deaths):
   NPV:          0.853  ← 85% of negatives correctly reassured
 ```
 
-Survival Outcomes by Cancer Site
+ Survival Outcomes by Cancer Site
 
-```
 ┌────────────┬──────┬────────┬──────────┬──────────┬───────────────────────────────────┐
 │ Site       │  n   │ Median │ 1-yr     │ 2-yr     │ Stage Breakdown (median months)    │
 ├────────────┼──────┼────────┼──────────┼──────────┼───────────────────────────────────┤
@@ -117,7 +118,7 @@ Survival Outcomes by Cancer Site
 └────────────┴──────┴────────┴──────────┴──────────┴───────────────────────────────────┘
 ```
 
- The Stage Shift Effect
+The Stage Shift Effect
 
 This is why OncosenseAI exists.
 
@@ -126,7 +127,7 @@ STOMACH CANCER
   Localized stage (what early detection delivers): ████████████████████████████████████  35 months
   Difference: 8.8x survival advantage
 
-PANCREATIC CANCER  
+PANCREATIC CANCER
   Distant stage:  ███  3 months
   Localized stage: ███████████  11 months
   Difference: 3.7x survival advantage
@@ -135,9 +136,10 @@ Every month of delay in diagnosis costs lives.
 OncosenseAI is the tool that catches them sooner.
 ```
 
- Module 1 — Symptom Intelligence Engine ✅
 
- Input Features (17 variables)
+Module 1 — Symptom Intelligence Engine ✅
+
+Input Features (17 variables)
 
 ```
 DEMOGRAPHICS          ALARM SYMPTOMS                CLINICAL CONTEXT
@@ -155,7 +157,7 @@ DEMOGRAPHICS          ALARM SYMPTOMS                CLINICAL CONTEXT
                       • Nausea / vomiting     🟡
 ```
 
-Model Architecture
+ Model Architecture
 
 
                     ┌─────────────────────────────────┐
@@ -189,9 +191,8 @@ Model Architecture
                follow-up     referral         referral
 ```
 
-Top Predictors (SHAP — SEER Validated)
+ Top Predictors (SHAP — SEER Validated)
 
-```
   Stage at presentation  ████████████████████████  most important
   Age                    ████████████████████
   Cancer Site            ██████████████████
@@ -204,34 +205,12 @@ Top Predictors (SHAP — SEER Validated)
   Race                   ██████
 ```
 
-Module 2 — Visual AI Diagnostics ✅
+ Module 2 — Visual AI Diagnostics ✅
 
-Approach: Rule-based image analysis using OpenCV + colour detection  
-
-What It Analyses
-
-```
-Patient uploads photo(s)
-        │
-        ├── Stool   → colour (red/melanotic/pale), blood detection,
-        │             consistency via texture, Bristol scale estimate
-        │
-        ├── Urine   → haematuria (red/pink), bilirubinuria (dark amber),
-        │             froth detection (proteinuria), clarity
-        │
-        └── Abdomen → jaundice (yellow skin via LAB colour space),
-                      distension (contour fill ratio)
-        │
-        ▼
-Concern Level (Low 🟢 / Moderate 🟡 / High 🔴)
-        │
-        ▼
-module2_output.json → feeds Module 1 combined risk score
-```
-
-Sample Output
-
-
+  INPUT: Stool image / Urine image / Abdomen image
+         ↓
+  OpenCV analysis — no API key required
+         ↓
   STOOL       🟢 Low      — No significant abnormal features
   URINE       🟡 Moderate — Frothy appearance → possible proteinuria
   ABDOMEN     🟢 Low      — No significant abnormal features
@@ -248,9 +227,66 @@ combined_risk = symptom_score + (visual_score × 0.20)
 # High visual concern (flag_urgent=True) auto-escalates to Urgent tier
 ```
 
-Research Methodology
 
+
+ Module 3 — Treatment Matcher ✅
+
+
+  INPUT: Cancer type + Stage + ECOG + Genomic markers
+         ↓
+  Guideline lookup — NCCN / NICE / ESMO / WHO
+         ↓
+  ┌─────────────────────────────────────────────────────┐
+  │  Genomic markers supported:                          │
+  │  HER2 · MSI-H · KRAS · BRAF · BRCA · PD-L1 CPS     │
+  └─────────────────────────────────────────────────────┘
+         ↓
+  PRIMARY PROTOCOL   + ADJUVANT REGIMEN
+  REGIMENS LIST      + GENOMIC INTERPRETATION
+  CLINICAL TRIALS    ← ClinicalTrials.gov API (free, no key)
+         ↓
+  OUTPUT: module3_output.json
 ```
+
+ Example Output (PATIENT_001 — Gastric Stage III)
+
+  Cancer         : GASTRIC Stage III
+  ECOG           : 1  (standard treatment)
+  HER2           : Positive
+  PD-L1 CPS      : 8  (≥5 — IO eligible)
+
+  Primary        : Perioperative FLOT4 + D2 gastrectomy
+  Adjuvant       : FLOT4 ×4 pre-op + surgery + FLOT4 ×4 post-op
+  Guideline      : NCCN Gastric v2.2024 / ESMO 2022 / CheckMate-649
+
+  Matched trials : 5 active studies (NCT05769725, NCT07023315, +3)
+```
+
+
+ Module 4 — Clinical PDF Report ✅
+
+
+  INPUT: module3_output.json
+         ↓
+  reportlab PDF generation
+         ↓
+  ┌─────────────────────────────────────────────────┐
+  │  OncosenseAI Clinical Report contains:           │
+  │                                                   │
+  │  • Patient metric summary (ID, stage, ECOG, CPS) │
+  │  • Genomic marker panel                           │
+  │  • Treatment protocol + adjuvant regimen          │
+  │  • Regimens considered table                      │
+  │  • Genomic interpretation notes                   │
+  │  • Matched clinical trials with NCT links         │
+  │  • Disclaimer + guideline attribution             │
+  └─────────────────────────────────────────────────┘
+         ↓
+  OUTPUT: OncosenseAI_Module4_ClinicalReport.pdf
+```
+
+ Research Methodology
+
 PHASE 1 ✅                   PHASE 2 🔨                PHASE 3 📋
 Algorithm Development        Prospective Pilot          Multi-Centre
 ──────────────────────       ──────────────────         ──────────────
@@ -265,15 +301,15 @@ Validation:                  Output:                    Regulatory:
   SHAP explainability ✅       concordance               MDR pathway
   KM survival curves ✅        SUS usability
   Visual AI pipeline ✅        Peer-reviewed pub
+  Treatment matching ✅
+  PDF report output ✅
 
 STATUS: ✅ Real data          STATUS: 🔨 Seeking          STATUS: 📋 Planned
            validated                  IRB partner
 ```
 
 
-
  Competitive Landscape
-
 
                      Symptom   Imaging   Treatment   Primary     Cost
                      Triage    AI        Matching    Care Ready
@@ -292,7 +328,6 @@ getting patients to the right test faster and cheaper.
 
  Repository Structure
 
-```
 oncoscan-research/
 │
 ├── 📓 OncoScan_Colab_RunThis.ipynb
@@ -331,14 +366,12 @@ oncoscan-research/
 │
 └── 📄 README.md
        This file
-```
 
----
 
 Run in Google Colab
 
 Module 1 — Symptom Engine:
-```
+
 Step 1 — Go to colab.research.google.com
 Step 2 — File → Upload notebook → OncoScan_Colab_RunThis.ipynb
 Step 3 — Runtime → Run all
@@ -371,9 +404,8 @@ Step 3 — python OncosenseAI_Module4_ClinicalReport.py
 Step 4 — Open OncosenseAI_Module4_ClinicalReport.pdf ✅
 ```
 
- Roadmap
+Roadmap
 
-```
 2026 Q1  ──●── ✅ Module 1 complete — symptom engine built
              │
 2026 Q1  ────●── ✅ SEER real data validation (n=500, AUROC 0.790)
@@ -389,7 +421,7 @@ Step 4 — Open OncosenseAI_Module4_ClinicalReport.pdf ✅
              │
 2026 Q1  ────●── ✅ Module 4 complete — PDF Clinical Report
              │      Auto-generated shareable clinical document
-             │      Full pipeline summary: symptom → visual → treatment → report
+             │      Full pipeline: symptom → visual → treatment → report
              │
 2026 Q2  ────●── 🔨 IRB pilot — 100 patient prospective cohort
              │      MIMIC-IV clinical notes NLP
@@ -431,8 +463,6 @@ Seeking Collaboration
 | TCGA | ✅ Open access | Cancer genomics + clinical data |
 | TCIA | 📋 Planned | Cancer imaging archive (Module 2 Phase B) |
 
----
-
  Disclaimer
 
 ```
@@ -444,22 +474,17 @@ Seeking Collaboration
 ║  Do not use for actual patient care decisions.            ║
 ║  Always apply clinical judgement.                         ║
 ╚═══════════════════════════════════════════════════════════╝
-```
 
----
+Citation
 
- Citation
-
-```bibtex
-@software{oncosenseai2025,
+bibtex
+@software{oncosenseai2026,
   title  = {OncosenseAI: Integrated Clinical AI for Early Abdominal Cancer Detection},
   author = {Zuberi, Ramsha},
   year   = {2026},
   url    = {https://github.com/ramshazuberi81-research/oncoscan-research}
 }
-```
 
----
 
-*OncosenseAI · Clinical AI · Oncology · Global Health*  
+*OncosenseAI · Clinical AI · Oncology · Global Health*
 *Built by a physician. For clinicians. For patients.*
