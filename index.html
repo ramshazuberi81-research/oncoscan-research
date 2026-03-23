@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OncosenseAI — Clinical Decision Support</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1D9E75;
+    --green-dim: #0F6E56;
+    --green-glow: rgba(29,158,117,0.15);
+    --red: #E24B4A;
+    --amber: #EF9F27;
+    --bg: #080C0F;
+    --bg2: #0D1318;
+    --bg3: #111820;
+    --border: rgba(255,255,255,0.07);
+    --border-green: rgba(29,158,117,0.3);
+    --text: #E8EDF2;
+    --text-dim: #6B7A8A;
+    --text-mid: #9AABB8;
+    --mono: 'IBM Plex Mono', monospace;
+    --serif: 'DM Serif Display', serif;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+background: var(–bg);
+color: var(–text);
+font-family: var(–sans);
+overflow-x: hidden;
+cursor: none;
+}
+
+/* Custom cursor */
+.cursor {
+position: fixed;
+width: 8px; height: 8px;
+background: var(–green);
+border-radius: 50%;
+pointer-events: none;
+z-index: 9999;
+transition: transform 0.1s;
+mix-blend-mode: screen;
+}
+.cursor-ring {
+position: fixed;
+width: 32px; height: 32px;
+border: 1px solid rgba(29,158,117,0.4);
+border-radius: 50%;
+pointer-events: none;
+z-index: 9998;
+transition: transform 0.15s, width 0.2s, height 0.2s;
+transform: translate(-50%, -50%);
+}
+
+/* NAV */
+nav {
+position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+padding: 20px 48px;
+display: flex; align-items: center; justify-content: space-between;
+background: linear-gradient(to bottom, rgba(8,12,15,0.95), transparent);
+backdrop-filter: blur(0px);
+}
+.nav-logo {
+font-family: var(–mono);
+font-size: 13px;
+color: var(–green);
+letter-spacing: 0.12em;
+text-transform: uppercase;
+}
+.nav-logo span { color: var(–text-dim); }
+.nav-links { display: flex; gap: 32px; align-items: center; }
+.nav-links a {
+font-family: var(–mono);
+font-size: 11px;
+color: var(–text-dim);
+text-decoration: none;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+transition: color 0.2s;
+}
+.nav-links a:hover { color: var(–green); }
+.nav-cta {
+padding: 8px 20px;
+border: 1px solid var(–border-green);
+border-radius: 2px;
+color: var(–green) !important;
+transition: background 0.2s !important;
+}
+.nav-cta:hover { background: var(–green-glow) !important; }
+
+/* HERO */
+.hero {
+min-height: 100vh;
+display: flex; flex-direction: column; justify-content: center;
+padding: 120px 48px 80px;
+position: relative;
+overflow: hidden;
+}
+
+/* Animated grid background */
+.hero-grid {
+position: absolute; inset: 0;
+background-image:
+linear-gradient(rgba(29,158,117,0.04) 1px, transparent 1px),
+linear-gradient(90deg, rgba(29,158,117,0.04) 1px, transparent 1px);
+background-size: 48px 48px;
+animation: gridDrift 20s linear infinite;
+}
+@keyframes gridDrift {
+0% { transform: translateY(0); }
+100% { transform: translateY(48px); }
+}
+
+/* Radial glow */
+.hero-glow {
+position: absolute;
+width: 600px; height: 600px;
+background: radial-gradient(circle, rgba(29,158,117,0.08) 0%, transparent 70%);
+top: 50%; left: 50%;
+transform: translate(-50%, -50%);
+pointer-events: none;
+}
+
+.hero-content { position: relative; z-index: 2; max-width: 900px; }
+
+.hero-tag {
+font-family: var(–mono);
+font-size: 11px;
+color: var(–green);
+letter-spacing: 0.15em;
+text-transform: uppercase;
+margin-bottom: 24px;
+opacity: 0;
+animation: fadeUp 0.6s ease 0.2s forwards;
+display: flex; align-items: center; gap: 10px;
+}
+.hero-tag::before {
+content: ‘’;
+display: inline-block;
+width: 24px; height: 1px;
+background: var(–green);
+}
+
+.hero-disclaimer {
+font-family: var(–mono);
+font-size: 10px;
+color: var(–red);
+letter-spacing: 0.08em;
+margin-bottom: 32px;
+opacity: 0;
+animation: fadeUp 0.6s ease 0.35s forwards;
+}
+
+.hero-h1 {
+font-family: var(–serif);
+font-size: clamp(42px, 6vw, 82px);
+line-height: 1.05;
+color: var(–text);
+margin-bottom: 12px;
+opacity: 0;
+animation: fadeUp 0.8s ease 0.5s forwards;
+}
+.hero-h1 em { color: var(–green); font-style: italic; }
+
+/* Survival gap counter */
+.survival-gap {
+display: flex; align-items: baseline; gap: 16px;
+margin: 40px 0;
+opacity: 0;
+animation: fadeUp 0.6s ease 0.9s forwards;
+}
+.gap-stat {
+display: flex; flex-direction: column; align-items: center;
+}
+.gap-num {
+font-family: var(–mono);
+font-size: 48px;
+font-weight: 500;
+line-height: 1;
+}
+.gap-num.green { color: var(–green); }
+.gap-num.red { color: var(–red); }
+.gap-unit {
+font-family: var(–mono);
+font-size: 11px;
+color: var(–text-dim);
+letter-spacing: 0.08em;
+margin-top: 4px;
+}
+.gap-label {
+font-family: var(–sans);
+font-size: 12px;
+color: var(–text-dim);
+margin-top: 6px;
+}
+.gap-divider {
+font-family: var(–mono);
+font-size: 32px;
+color: var(–border);
+align-self: center;
+padding: 0 8px;
+}
+.gap-arrow {
+font-size: 28px;
+color: var(–text-dim);
+align-self: center;
+}
+.gap-caption {
+align-self: center;
+padding-left: 8px;
+}
+.gap-caption .big {
+font-family: var(–serif);
+font-size: 28px;
+color: var(–text);
+}
+.gap-caption .big span { color: var(–amber); }
+.gap-caption .sub {
+font-family: var(–mono);
+font-size: 11px;
+color: var(–text-dim);
+margin-top: 4px;
+}
+
+/* Typewriter terminal */
+.terminal {
+background: var(–bg2);
+border: 1px solid var(–border);
+border-radius: 6px;
+padding: 20px 24px;
+margin: 40px 0;
+max-width: 680px;
+opacity: 0;
+animation: fadeUp 0.6s ease 1.1s forwards;
+position: relative;
+overflow: hidden;
+}
+.terminal::before {
+content: ‘’;
+position: absolute; top: 0; left: 0; right: 0;
+height: 1px;
+background: linear-gradient(90deg, transparent, var(–green), transparent);
+}
+.terminal-bar {
+display: flex; gap: 6px; margin-bottom: 14px;
+}
+.terminal-dot {
+width: 10px; height: 10px; border-radius: 50%;
+}
+.terminal-dot:nth-child(1) { background: #FF5F57; }
+.terminal-dot:nth-child(2) { background: #FEBC2E; }
+.terminal-dot:nth-child(3) { background: #28C840; }
+.terminal-line {
+font-family: var(–mono);
+font-size: 12px;
+line-height: 1.8;
+color: var(–text-mid);
+}
+.terminal-line .prompt { color: var(–green); }
+.terminal-line .val { color: var(–text); }
+.terminal-line .comment { color: var(–text-dim); }
+.terminal-line .warn { color: var(–amber); }
+.terminal-line .err { color: var(–red); }
+.cursor-blink {
+display: inline-block;
+width: 7px; height: 13px;
+background: var(–green);
+animation: blink 1s step-end infinite;
+vertical-align: middle;
+margin-left: 2px;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+.hero-ctas {
+display: flex; gap: 16px; align-items: center;
+opacity: 0;
+animation: fadeUp 0.6s ease 1.4s forwards;
+}
+.btn-primary {
+padding: 14px 32px;
+background: var(–green);
+color: #fff;
+font-family: var(–mono);
+font-size: 12px;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+border: none;
+border-radius: 2px;
+cursor: none;
+transition: background 0.2s, transform 0.15s;
+text-decoration: none;
+display: inline-block;
+}
+.btn-primary:hover { background: var(–green-dim); transform: translateY(-1px); }
+.btn-outline {
+padding: 14px 32px;
+background: transparent;
+color: var(–text-mid);
+font-family: var(–mono);
+font-size: 12px;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+border: 1px solid var(–border);
+border-radius: 2px;
+cursor: none;
+transition: border-color 0.2s, color 0.2s;
+text-decoration: none;
+display: inline-block;
+}
+.btn-outline:hover { border-color: var(–border-green); color: var(–green); }
+
+@keyframes fadeUp {
+from { opacity: 0; transform: translateY(20px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+/* STATS STRIP */
+.stats-strip {
+border-top: 1px solid var(–border);
+border-bottom: 1px solid var(–border);
+padding: 28px 48px;
+display: flex; gap: 0;
+background: var(–bg2);
+position: relative; z-index: 2;
+}
+.stat-item {
+flex: 1;
+padding: 0 32px;
+border-right: 1px solid var(–border);
+opacity: 0;
+transform: translateY(12px);
+transition: opacity 0.5s, transform 0.5s;
+}
+.stat-item:first-child { padding-left: 0; }
+.stat-item:last-child { border-right: none; }
+.stat-item.visible { opacity: 1; transform: translateY(0); }
+.stat-num {
+font-family: var(–mono);
+font-size: 28px;
+color: var(–green);
+font-weight: 500;
+}
+.stat-label {
+font-family: var(–sans);
+font-size: 12px;
+color: var(–text-dim);
+margin-top: 4px;
+}
+
+/* CINEMATIC WALKTHROUGH */
+.walkthrough {
+padding: 100px 48px;
+max-width: 1100px;
+margin: 0 auto;
+}
+.section-tag {
+font-family: var(–mono);
+font-size: 11px;
+color: var(–green);
+letter-spacing: 0.15em;
+text-transform: uppercase;
+margin-bottom: 16px;
+display: flex; align-items: center; gap: 10px;
+}
+.section-tag::before { content: ‘’; display: inline-block; width: 24px; height: 1px; background: var(–green); }
+.section-h2 {
+font-family: var(–serif);
+font-size: clamp(32px, 4vw, 52px);
+color: var(–text);
+margin-bottom: 60px;
+line-height: 1.1;
+}
+.section-h2 em { color: var(–green); font-style: italic; }
+
+.module-flow {
+display: flex; flex-direction: column; gap: 2px;
+}
+.module-card {
+display: grid;
+grid-template-columns: 80px 1fr 1fr;
+gap: 0;
+border: 1px solid var(–border);
+border-radius: 4px;
+overflow: hidden;
+opacity: 0;
+transform: translateX(-20px);
+transition: opacity 0.5s, transform 0.5s, border-color 0.3s;
+cursor: none;
+}
+.module-card.visible { opacity: 1; transform: translateX(0); }
+.module-card:hover { border-color: var(–border-green); }
+.module-card:hover .module-num { background: var(–green); }
+.module-num {
+background: var(–bg3);
+display: flex; align-items: center; justify-content: center;
+font-family: var(–mono);
+font-size: 22px;
+color: var(–text-dim);
+transition: background 0.3s, color 0.3s;
+padding: 24px;
+border-right: 1px solid var(–border);
+}
+.module-card:hover .module-num { color: #fff; }
+.module-body {
+padding: 24px 28px;
+border-right: 1px solid var(–border);
+}
+.module-title {
+font-family: var(–mono);
+font-size: 13px;
+color: var(–text);
+font-weight: 500;
+margin-bottom: 6px;
+text-transform: uppercase;
+letter-spacing: 0.06em;
+}
+.module-desc {
+font-size: 13px;
+color: var(–text-dim);
+line-height: 1.6;
+}
+.module-output {
+padding: 24px 28px;
+background: var(–bg2);
+}
+.module-out-label {
+font-family: var(–mono);
+font-size: 10px;
+color: var(–text-dim);
+letter-spacing: 0.1em;
+text-transform: uppercase;
+margin-bottom: 8px;
+}
+.module-out-val {
+font-family: var(–mono);
+font-size: 12px;
+color: var(–green);
+line-height: 1.7;
+}
+
+/* LIMITATIONS */
+.limitations {
+padding: 80px 48px;
+border-top: 1px solid var(–border);
+max-width: 1100px;
+margin: 0 auto;
+}
+.limit-grid {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 1px;
+background: var(–border);
+border: 1px solid var(–border);
+border-radius: 4px;
+overflow: hidden;
+margin-top: 40px;
+}
+.limit-item {
+background: var(–bg);
+padding: 28px 24px;
+opacity: 0;
+transition: opacity 0.4s, background 0.2s;
+}
+.limit-item.visible { opacity: 1; }
+.limit-item:hover { background: var(–bg2); }
+.limit-icon {
+font-family: var(–mono);
+font-size: 18px;
+color: var(–amber);
+margin-bottom: 10px;
+}
+.limit-title {
+font-family: var(–mono);
+font-size: 11px;
+color: var(–text-mid);
+text-transform: uppercase;
+letter-spacing: 0.08em;
+margin-bottom: 6px;
+}
+.limit-text {
+font-size: 12px;
+color: var(–text-dim);
+line-height: 1.6;
+}
+
+/* LIVE DEMO SECTION */
+.demo-section {
+padding: 100px 48px;
+border-top: 1px solid var(–border);
+position: relative;
+overflow: hidden;
+}
+.demo-section::before {
+content: ‘’;
+position: absolute; inset: 0;
+background: radial-gradient(ellipse at 50% 0%, rgba(29,158,117,0.06) 0%, transparent 60%);
+pointer-events: none;
+}
+.demo-wrap {
+max-width: 900px;
+margin: 0 auto;
+position: relative; z-index: 2;
+}
+.demo-header {
+text-align: center;
+margin-bottom: 48px;
+}
+.demo-frame {
+background: var(–bg2);
+border: 1px solid var(–border-green);
+border-radius: 8px;
+overflow: hidden;
+box-shadow: 0 0 60px rgba(29,158,117,0.08), 0 40px 80px rgba(0,0,0,0.5);
+}
+.demo-frame-bar {
+background: var(–bg3);
+border-bottom: 1px solid var(–border);
+padding: 12px 16px;
+display: flex; align-items: center; gap: 10px;
+}
+.frame-dots { display: flex; gap: 6px; }
+.frame-dot { width: 10px; height: 10px; border-radius: 50%; }
+.frame-dot:nth-child(1) { background: #FF5F57; }
+.frame-dot:nth-child(2) { background: #FEBC2E; }
+.frame-dot:nth-child(3) { background: #28C840; }
+.frame-url {
+flex: 1;
+background: var(–bg);
+border: 1px solid var(–border);
+border-radius: 3px;
+padding: 5px 12px;
+font-family: var(–mono);
+font-size: 11px;
+color: var(–text-dim);
+text-align: center;
+}
+.demo-inner {
+padding: 32px;
+}
+
+/* EMBEDDED DEMO — adapted from original */
+.wrap { padding: 0; max-width: 100%; }
+.disclaimer {
+background: rgba(226,75,74,0.08);
+border: 0.5px solid rgba(226,75,74,0.3);
+border-radius: 4px;
+padding: 10px 14px;
+font-size: 11px;
+color: #E24B4A;
+margin-bottom: 1.5rem;
+font-family: var(–mono);
+letter-spacing: 0.03em;
+}
+.pipeline { display: flex; gap: 6px; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.pip-step {
+flex: 1; min-width: 90px; padding: 10px 10px 8px;
+border: 0.5px solid var(–border); border-radius: 4px;
+cursor: pointer; transition: border-color 0.15s, background 0.15s;
+background: var(–bg3);
+}
+.pip-step.active { border: 1.5px solid var(–green); background: rgba(29,158,117,0.1); }
+.pip-step.done { border-color: var(–green); background: rgba(29,158,117,0.07); }
+.pip-step.locked { opacity: 0.35; cursor: not-allowed; }
+.pip-num { font-size: 11px; color: var(–text-dim); margin-bottom: 2px; font-family: var(–mono); }
+.pip-label { font-size: 13px; font-weight: 500; color: var(–text); }
+.pip-sub { font-size: 11px; color: var(–text-dim); margin-top: 2px; }
+.arrow { font-size: 16px; color: var(–text-dim); flex-shrink: 0; }
+.panel {
+background: var(–bg3);
+border: 0.5px solid var(–border);
+border-radius: 6px;
+padding: 1.25rem 1.25rem 1rem;
+}
+.panel-title { font-size: 14px; font-weight: 500; color: var(–text); margin-bottom: 4px; font-family: var(–mono); }
+.panel-sub { font-size: 12px; color: var(–text-dim); margin-bottom: 1.25rem; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.25rem; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group label { font-size: 11px; color: var(–text-dim); font-family: var(–mono); letter-spacing: 0.05em; }
+select, input[type=number] {
+font-size: 13px; padding: 7px 10px;
+border: 0.5px solid var(–border); border-radius: 3px;
+background: var(–bg2); color: var(–text); width: 100%;
+font-family: var(–sans);
+}
+select:focus, input:focus { outline: none; border-color: var(–green); }
+.checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1.25rem; }
+.cb-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(–text); cursor: pointer; }
+.cb-item input { width: 14px; height: 14px; cursor: pointer; accent-color: var(–green); }
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border: 0.5px solid var(–border); border-radius: 3px; background: transparent; color: var(–text-mid); font-size: 12px; font-family: var(–mono); cursor: pointer; transition: background 0.12s; letter-spacing: 0.05em; }
+.btn:hover { background: var(–bg2); }
+.btn-action { background: var(–green); border-color: var(–green); color: #fff; }
+.btn-action:hover { background: var(–green-dim); border-color: var(–green-dim); }
+.result-card { border: 0.5px solid var(–border); border-radius: 4px; padding: 1rem 1.1rem; margin-bottom: 10px; background: var(–bg2); }
+.result-label { font-size: 10px; color: var(–text-dim); margin-bottom: 3px; font-family: var(–mono); letter-spacing: 0.08em; text-transform: uppercase; }
+.result-value { font-size: 13px; font-weight: 500; color: var(–text); }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; font-family: var(–mono); }
+.badge-teal { background: rgba(29,158,117,0.15); color: var(–green); }
+.badge-amber { background: rgba(239,159,39,0.15); color: var(–amber); }
+.badge-red { background: rgba(226,75,74,0.15); color: var(–red); }
+.badge-blue { background: rgba(24,95,165,0.15); color: #5BA4E8; }
+.risk-bar { height: 6px; border-radius: 3px; background: var(–bg); margin: 8px 0; overflow: hidden; }
+.risk-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+.section-divider { border: none; border-top: 0.5px solid var(–border); margin: 1.25rem 0; }
+.trial-row { padding: 8px 0; border-bottom: 0.5px solid var(–border); display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.trial-row:last-child { border-bottom: none; }
+.symptom-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1.25rem; }
+.chip { padding: 4px 10px; border: 0.5px solid var(–border); border-radius: 20px; font-size: 12px; cursor: pointer; color: var(–text-dim); background: var(–bg3); transition: all 0.12s; }
+.chip:hover { border-color: var(–border-green); color: var(–text); }
+.chip.sel { background: rgba(29,158,117,0.15); border-color: var(–green); color: var(–green); }
+.chip.alarm { border-color: rgba(226,75,74,0.4); color: rgba(226,75,74,0.8); }
+.chip.alarm.sel { background: rgba(226,75,74,0.12); border-color: var(–red); color: var(–red); }
+.nav-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1.25rem; }
+.step-dots { display: flex; gap: 6px; }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: var(–border); }
+.dot.active { background: var(–green); }
+.score-ring { display: flex; align-items: center; gap: 16px; margin-bottom: 1rem; }
+.ring-wrap { position: relative; width: 72px; height: 72px; flex-shrink: 0; }
+.ring-wrap svg { width: 72px; height: 72px; }
+.ring-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
+.ring-pct { font-size: 18px; font-weight: 500; color: var(–text); font-family: var(–mono); }
+.ring-lbl { font-size: 10px; color: var(–text-dim); font-family: var(–mono); }
+
+/* COLLABORATE */
+.collab {
+padding: 100px 48px;
+border-top: 1px solid var(–border);
+max-width: 1100px;
+margin: 0 auto;
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 80px;
+align-items: start;
+}
+.collab-left .section-h2 { margin-bottom: 24px; }
+.collab-desc { font-size: 15px; color: var(–text-dim); line-height: 1.7; margin-bottom: 32px; }
+.collab-list { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 36px; }
+.collab-list li {
+display: flex; align-items: flex-start; gap: 12px;
+font-size: 14px; color: var(–text-mid); line-height: 1.5;
+}
+.collab-list li::before { content: ‘→’; color: var(–green); font-family: var(–mono); flex-shrink: 0; margin-top: 1px; }
+.collab-not {
+font-family: var(–mono);
+font-size: 11px;
+color: var(–text-dim);
+letter-spacing: 0.05em;
+padding-top: 16px;
+border-top: 1px solid var(–border);
+}
+.collab-not span { color: var(–green); }
+.collab-right { display: flex; flex-direction: column; gap: 16px; }
+.collab-card {
+background: var(–bg2);
+border: 1px solid var(–border);
+border-radius: 4px;
+padding: 24px;
+transition: border-color 0.2s;
+}
+.collab-card:hover { border-color: var(–border-green); }
+.collab-card-tag { font-family: var(–mono); font-size: 10px; color: var(–green); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+.collab-card-title { font-size: 15px; font-weight: 500; color: var(–text); margin-bottom: 6px; }
+.collab-card-desc { font-size: 13px; color: var(–text-dim); line-height: 1.5; }
+.contact-block {
+background: var(–bg3);
+border: 1px solid var(–border-green);
+border-radius: 4px;
+padding: 20px 24px;
+display: flex; align-items: center; justify-content: space-between;
+gap: 16px;
+}
+.contact-email { font-family: var(–mono); font-size: 13px; color: var(–green); }
+.contact-sub { font-size: 11px; color: var(–text-dim); margin-top: 3px; }
+
+/* FOOTER */
+footer {
+padding: 40px 48px;
+border-top: 1px solid var(–border);
+display: flex; justify-content: space-between; align-items: center;
+}
+.footer-left { font-family: var(–mono); font-size: 11px; color: var(–text-dim); line-height: 1.6; }
+.footer-right { font-family: var(–mono); font-size: 11px; color: var(–text-dim); text-align: right; }
+.footer-right a { color: var(–green); text-decoration: none; }
+
+/* SCROLL REVEAL */
+.reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.6s, transform 0.6s; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* SCROLLING TICKER */
+.ticker-wrap {
+overflow: hidden;
+border-top: 1px solid var(–border);
+border-bottom: 1px solid var(–border);
+padding: 12px 0;
+background: var(–bg2);
+}
+.ticker {
+display: flex;
+white-space: nowrap;
+animation: ticker 30s linear infinite;
+}
+.ticker-item {
+font-family: var(–mono);
+font-size: 11px;
+color: var(–text-dim);
+padding: 0 48px;
+letter-spacing: 0.08em;
+}
+.ticker-item span { color: var(–green); }
+@keyframes ticker {
+0% { transform: translateX(0); }
+100% { transform: translateX(-50%); }
+}
+
+@media (max-width: 768px) {
+nav, .hero, .stats-strip, .walkthrough, .limitations, .demo-section, .collab, footer { padding-left: 24px; padding-right: 24px; }
+.module-card { grid-template-columns: 60px 1fr; }
+.module-output { display: none; }
+.limit-grid { grid-template-columns: 1fr; }
+.collab { grid-template-columns: 1fr; gap: 40px; }
+.survival-gap { flex-wrap: wrap; gap: 12px; }
+.form-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+
+<nav>
+  <div class="nav-logo">Oncosense<span>AI</span></div>
+  <div class="nav-links">
+    <a href="#walkthrough">Pipeline</a>
+    <a href="#demo">Demo</a>
+    <a href="#collaborate">Collaborate</a>
+    <a href="mailto:ramshazubairi81@gmail.com" class="nav-cta">Contact</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-tag">Research Prototype · v0.1 · 2024</div>
+    <div class="hero-disclaimer">⚠ Not validated for clinical use · Not FDA/CE approved · Always apply clinical judgement</div>
+    <h1 class="hero-h1">
+      Clinical AI for<br>
+      the hospital that<br>
+      has no <em>tumor board.</em>
+    </h1>
+
+```
+<div class="survival-gap">
+  <div class="gap-stat">
+    <div class="gap-num green" id="cnt1">0</div>
+    <div class="gap-unit">months</div>
+    <div class="gap-label">Localized</div>
+  </div>
+  <div class="gap-divider">vs</div>
+  <div class="gap-stat">
+    <div class="gap-num red" id="cnt2">0</div>
+    <div class="gap-unit">months</div>
+    <div class="gap-label">Distant stage</div>
+  </div>
+  <div class="gap-arrow">→</div>
+  <div class="gap-caption">
+    <div class="big"><span id="cnt3">0</span>× difference</div>
+    <div class="sub">Caught by timing, not biology.</div>
+  </div>
+</div>
+
+<div class="terminal" id="terminal">
+  <div class="terminal-bar">
+    <div class="terminal-dot"></div>
+    <div class="terminal-dot"></div>
+    <div class="terminal-dot"></div>
+  </div>
+  <div id="termLines"></div>
+</div>
+
+<div class="hero-ctas">
+  <a href="#demo" class="btn-primary">Try the live demo ↓</a>
+  <a href="#collaborate" class="btn-outline">Collaborate with us</a>
+</div>
+```
+
+  </div>
+</section>
+
+<!-- TICKER -->
+
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span class="ticker-item">NCCN Gastric <span>v2.2024</span></span>
+    <span class="ticker-item">ESMO Guidelines <span>2022</span></span>
+    <span class="ticker-item">CheckMate-649 — Janjigian et al. <span>2021</span></span>
+    <span class="ticker-item">DESTINY-Gastric01 — Shitara et al. <span>2021</span></span>
+    <span class="ticker-item">ToGA — Bang et al. <span>2010</span></span>
+    <span class="ticker-item">ClinicalTrials.gov API</span>
+    <span class="ticker-item">Rule-based · Fully Auditable · Every branch traceable</span>
+    <span class="ticker-item">NCCN Gastric <span>v2.2024</span></span>
+    <span class="ticker-item">ESMO Guidelines <span>2022</span></span>
+    <span class="ticker-item">CheckMate-649 — Janjigian et al. <span>2021</span></span>
+    <span class="ticker-item">DESTINY-Gastric01 — Shitara et al. <span>2021</span></span>
+    <span class="ticker-item">ToGA — Bang et al. <span>2010</span></span>
+    <span class="ticker-item">ClinicalTrials.gov API</span>
+    <span class="ticker-item">Rule-based · Fully Auditable · Every branch traceable</span>
+  </div>
+</div>
+
+<!-- STATS STRIP -->
+
+<div class="stats-strip">
+  <div class="stat-item" id="stat1">
+    <div class="stat-num">17</div>
+    <div class="stat-label">Clinical variables — Module 1</div>
+  </div>
+  <div class="stat-item" id="stat2">
+    <div class="stat-num">4</div>
+    <div class="stat-label">Guideline-encoded modules</div>
+  </div>
+  <div class="stat-item" id="stat3">
+    <div class="stat-num">100%</div>
+    <div class="stat-label">Auditable decision tree</div>
+  </div>
+  <div class="stat-item" id="stat4">
+    <div class="stat-num">0</div>
+    <div class="stat-label">Clinical use — prototype only</div>
+  </div>
+</div>
+
+<!-- WALKTHROUGH -->
+
+<section class="walkthrough" id="walkthrough">
+  <div class="section-tag">The pipeline</div>
+  <h2 class="section-h2">Four modules.<br><em>Every step traceable.</em></h2>
+
+  <div class="module-flow">
+    <div class="module-card" id="mc1">
+      <div class="module-num">01</div>
+      <div class="module-body">
+        <div class="module-title">Symptom Intelligence Engine</div>
+        <div class="module-desc">17-variable weighted risk model. Patient demographics, alarm features, symptom duration, family history, prior GI diagnoses. Outputs stratified 12-month malignancy risk with key driver attribution.</div>
+      </div>
+      <div class="module-output">
+        <div class="module-out-label">Example output</div>
+        <div class="module-out-val">Risk: 72% (High)<br>Drivers: age &gt;50, abdominal pain,<br>family history, H. pylori</div>
+      </div>
+    </div>
+    <div class="module-card" id="mc2">
+      <div class="module-num">02</div>
+      <div class="module-body">
+        <div class="module-title">Visual AI Diagnostics</div>
+        <div class="module-desc">Simulated OpenCV image analysis pipeline for stool, urine, and abdominal imaging. Colour profiling, symmetry scoring, and occult blood signal detection. Research prototype — not validated imaging AI.</div>
+      </div>
+      <div class="module-output">
+        <div class="module-out-label">Example output</div>
+        <div class="module-out-val">Stool: occult blood HIGH<br>Abdomen: soft-tissue density<br>variation detected</div>
+      </div>
+    </div>
+    <div class="module-card" id="mc3">
+      <div class="module-num">03</div>
+      <div class="module-body">
+        <div class="module-title">Treatment Matcher</div>
+        <div class="module-desc">Deterministic decision tree against NCCN/ESMO guidelines. Every branch is auditable. Incorporates HER2, PD-L1 CPS, MSI-H, KRAS, BRAF, BRCA. Real-time trial matching via ClinicalTrials.gov API.</div>
+      </div>
+      <div class="module-output">
+        <div class="module-out-label">Stage III · HER2+ · CPS=8</div>
+        <div class="module-out-val">→ FLOT4 + D2 gastrectomy<br>→ Trastuzumab + CAPOX<br>→ Nivolumab (CPS≥5)<br>→ 5 matched trials</div>
+      </div>
+    </div>
+    <div class="module-card" id="mc4">
+      <div class="module-num">04</div>
+      <div class="module-body">
+        <div class="module-title">Clinical Report Generator</div>
+        <div class="module-desc">One command. Structured PDF output. Full pipeline summary including risk stratification, treatment protocol, IO eligibility, genomic flags, and matched trial list. Exportable research document.</div>
+      </div>
+      <div class="module-output">
+        <div class="module-out-label">Example output</div>
+        <div class="module-out-val">PDF: PATIENT_001<br>Gastric Stage III · ECOG 1<br>Protocol: FLOT4 + D2<br>IO eligible: CPS 8 ≥ 5</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LIMITATIONS -->
+
+<section class="limitations reveal" id="limitations">
+  <div class="section-tag">Known limitations — plainly</div>
+  <h2 class="section-h2" style="margin-bottom:8px">Vagueness in clinical AI<br>is a form of <em>dishonesty.</em></h2>
+  <p style="font-size:14px;color:var(--text-dim);max-width:520px;line-height:1.7;margin-bottom:0">Until prospective validation exists, no clinical weight should be placed on outputs.</p>
+  <div class="limit-grid">
+    <div class="limit-item" id="lim1">
+      <div class="limit-icon">⚠</div>
+      <div class="limit-title">Guideline version</div>
+      <div class="limit-text">Pinned to NCCN v2.2024 / ESMO 2022. New approvals are not automatically reflected.</div>
+    </div>
+    <div class="limit-item" id="lim2">
+      <div class="limit-icon">⚠</div>
+      <div class="limit-title">Missing markers</div>
+      <div class="limit-text">CLDN18.2, FGFR2b, and TMB markers are not yet encoded in the decision tree.</div>
+    </div>
+    <div class="limit-item" id="lim3">
+      <div class="limit-icon">⚠</div>
+      <div class="limit-title">Patient complexity</div>
+      <div class="limit-text">No comorbidities, organ function, renal/hepatic impairment, or patient preference inputs.</div>
+    </div>
+    <div class="limit-item" id="lim4">
+      <div class="limit-icon">⚠</div>
+      <div class="limit-title">Trial matching</div>
+      <div class="limit-text">Keyword-based matching only. Eligibility criteria are not verified against patient data.</div>
+    </div>
+    <div class="limit-item" id="lim5">
+      <div class="limit-icon">⚠</div>
+      <div class="limit-title">No validation cohort</div>
+      <div class="limit-text">Not validated on real patient cohorts. IRB pilot (100-patient prospective) is the next step.</div>
+    </div>
+    <div class="limit-item" id="lim6">
+      <div class="limit-icon">⚠</div>
+      <div class="limit-title">Rule-based brittleness</div>
+      <div class="limit-text">Encodes what guidelines say, not what past practice did. Novel presentations may not match any branch.</div>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE DEMO -->
+
+<section class="demo-section" id="demo">
+  <div class="demo-wrap">
+    <div class="demo-header reveal">
+      <div class="section-tag" style="justify-content:center">Live interactive demo</div>
+      <h2 class="section-h2" style="text-align:center;margin-bottom:12px">Try the full pipeline.<br><em>Right here.</em></h2>
+      <p style="font-size:14px;color:var(--text-dim);max-width:480px;margin:0 auto;line-height:1.7">Work through all four modules with a real case. Research prototype — not for clinical use.</p>
+    </div>
+    <div class="demo-frame reveal" style="transition-delay:0.2s">
+      <div class="demo-frame-bar">
+        <div class="frame-dots">
+          <div class="frame-dot"></div>
+          <div class="frame-dot"></div>
+          <div class="frame-dot"></div>
+        </div>
+        <div class="frame-url">oncosenseai.com · live demo · research prototype only</div>
+      </div>
+      <div class="demo-inner">
+
+```
+    <!-- EMBEDDED DEMO -->
+    <div class="wrap">
+      <div class="disclaimer">⚠ Research prototype only — not validated for clinical use — not FDA/CE approved — always apply clinical judgement</div>
+
+      <div class="pipeline" id="pipeline">
+        <div class="pip-step active" id="s1" onclick="goTo(1)">
+          <div class="pip-num">Module 1</div>
+          <div class="pip-label">Symptom engine</div>
+          <div class="pip-sub">17 variables</div>
+        </div>
+        <div class="arrow">›</div>
+        <div class="pip-step locked" id="s2" onclick="goTo(2)">
+          <div class="pip-num">Module 2</div>
+          <div class="pip-label">Visual AI</div>
+          <div class="pip-sub">Image analysis</div>
+        </div>
+        <div class="arrow">›</div>
+        <div class="pip-step locked" id="s3" onclick="goTo(3)">
+          <div class="pip-num">Module 3</div>
+          <div class="pip-label">Treatment matcher</div>
+          <div class="pip-sub">NCCN / ESMO</div>
+        </div>
+        <div class="arrow">›</div>
+        <div class="pip-step locked" id="s4" onclick="goTo(4)">
+          <div class="pip-num">Module 4</div>
+          <div class="pip-label">Clinical report</div>
+          <div class="pip-sub">Full summary</div>
+        </div>
+      </div>
+
+      <div id="panel1" class="panel">
+        <div class="panel-title">Module 1 — Symptom intelligence engine</div>
+        <div class="panel-sub">Select presenting symptoms and enter patient demographics</div>
+        <div class="form-grid">
+          <div class="form-group"><label>Age</label><input type="number" id="age" value="58" min="18" max="99"></div>
+          <div class="form-group"><label>Sex</label><select id="sex"><option>Male</option><option>Female</option></select></div>
+          <div class="form-group"><label>BMI</label><input type="number" id="bmi" value="24" min="14" max="45"></div>
+          <div class="form-group"><label>Symptom duration</label><select id="dur"><option value="1">Less than 4 weeks</option><option value="2" selected>4–12 weeks</option><option value="3">More than 12 weeks</option></select></div>
+        </div>
+        <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;font-family:var(--mono)">PRESENTING SYMPTOMS <span style="color:var(--red);font-size:10px">(RED = ALARM FEATURES)</span></div>
+        <div class="symptom-chips">
+          <div class="chip alarm" data-w="3" onclick="toggleChip(this)">Rectal bleeding</div>
+          <div class="chip alarm" data-w="3" onclick="toggleChip(this)">Unexplained weight loss</div>
+          <div class="chip alarm" data-w="3" onclick="toggleChip(this)">Palpable mass</div>
+          <div class="chip alarm" data-w="3" onclick="toggleChip(this)">Jaundice</div>
+          <div class="chip" data-w="2" onclick="toggleChip(this)">Dysphagia</div>
+          <div class="chip sel" data-w="2" onclick="toggleChip(this)">Abdominal pain</div>
+          <div class="chip" data-w="2" onclick="toggleChip(this)">Change in bowel habit</div>
+          <div class="chip sel" data-w="1" onclick="toggleChip(this)">Early satiety</div>
+          <div class="chip sel" data-w="1" onclick="toggleChip(this)">Fatigue</div>
+          <div class="chip" data-w="2" onclick="toggleChip(this)">Iron deficiency anaemia</div>
+          <div class="chip" data-w="1" onclick="toggleChip(this)">Nausea / vomiting</div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group"><label>Family history of GI cancer</label><select id="fhx"><option value="0">None</option><option value="1" selected>First-degree relative</option></select></div>
+          <div class="form-group"><label>Prior GI diagnosis</label><select id="pgid"><option value="0">None</option><option value="1">GERD / gastritis</option><option value="2" selected>H. pylori</option></select></div>
+        </div>
+        <div class="nav-row">
+          <div class="step-dots"><div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+          <button class="btn btn-action" onclick="runModule1()">Run symptom analysis ›</button>
+        </div>
+      </div>
+
+      <div id="panel1r" class="panel" style="display:none;margin-top:12px">
+        <div class="panel-title">Module 1 result — risk stratification</div>
+        <div class="score-ring">
+          <div class="ring-wrap">
+            <svg viewBox="0 0 72 72"><circle cx="36" cy="36" r="28" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="7"/><circle id="riskArc" cx="36" cy="36" r="28" fill="none" stroke="#E24B4A" stroke-width="7" stroke-dasharray="0 176" stroke-linecap="round" transform="rotate(-90 36 36)" style="transition:stroke-dasharray 0.8s ease"/></svg>
+            <div class="ring-center"><div class="ring-pct" id="riskPct">—</div><div class="ring-lbl">12-mo risk</div></div>
+          </div>
+          <div>
+            <div id="riskBadge" style="margin-bottom:6px"></div>
+            <div style="font-size:13px;color:var(--text-dim)" id="riskNote"></div>
+          </div>
+        </div>
+        <div class="risk-bar"><div class="risk-fill" id="riskFill" style="background:#E24B4A;width:0%"></div></div>
+        <div style="font-size:11px;color:var(--text-dim);margin-bottom:1rem;font-family:var(--mono)" id="riskDrivers"></div>
+        <div class="nav-row">
+          <div></div>
+          <button class="btn btn-action" onclick="goTo(2)">Proceed to visual AI ›</button>
+        </div>
+      </div>
+
+      <div id="panel2" class="panel" style="display:none;margin-top:12px">
+        <div class="panel-title">Module 2 — Visual AI diagnostics</div>
+        <div class="panel-sub">Simulated OpenCV image analysis (stool · urine · abdomen)</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.25rem">
+          <div id="img1" class="result-card" style="cursor:pointer;text-align:center" onclick="selectImage(this,'stool')">
+            <div style="font-size:24px;margin-bottom:6px">🪣</div>
+            <div style="font-size:12px;font-weight:500;color:var(--text)">Stool sample</div>
+            <div style="font-size:11px;color:var(--text-dim);margin-top:3px" id="stoolStatus">Click to analyse</div>
+          </div>
+          <div id="img2" class="result-card" style="cursor:pointer;text-align:center" onclick="selectImage(this,'urine')">
+            <div style="font-size:24px;margin-bottom:6px">🧪</div>
+            <div style="font-size:12px;font-weight:500;color:var(--text)">Urine sample</div>
+            <div style="font-size:11px;color:var(--text-dim);margin-top:3px" id="urineStatus">Click to analyse</div>
+          </div>
+          <div id="img3" class="result-card" style="cursor:pointer;text-align:center" onclick="selectImage(this,'abdomen')">
+            <div style="font-size:24px;margin-bottom:6px">🫁</div>
+            <div style="font-size:12px;font-weight:500;color:var(--text)">Abdomen image</div>
+            <div style="font-size:11px;color:var(--text-dim);margin-top:3px" id="abdomenStatus">Click to analyse</div>
+          </div>
+        </div>
+        <div id="imgResult" style="display:none" class="result-card">
+          <div class="result-label">OpenCV analysis output</div>
+          <div id="imgResultText" class="result-value" style="margin-top:4px;font-family:var(--mono);font-size:12px"></div>
+        </div>
+        <div class="nav-row">
+          <button class="btn" onclick="goTo(1)">‹ Back</button>
+          <button class="btn btn-action" onclick="goTo(3)">Proceed to treatment matcher ›</button>
+        </div>
+      </div>
+
+      <div id="panel3" class="panel" style="display:none;margin-top:12px">
+        <div class="panel-title">Module 3 — Treatment matcher</div>
+        <div class="panel-sub">NCCN Gastric v2.2024 · ESMO 2022 · CheckMate-649 · ClinicalTrials.gov</div>
+        <div class="form-grid">
+          <div class="form-group"><label>Cancer type</label><select id="ctype"><option>Gastric adenocarcinoma</option><option>GEJ adenocarcinoma</option><option>Pancreatic ductal adenocarcinoma</option><option>Oesophageal adenocarcinoma</option></select></div>
+          <div class="form-group"><label>Stage</label><select id="cstage"><option>I</option><option>II</option><option value="III" selected>III</option><option>IV</option></select></div>
+          <div class="form-group"><label>ECOG performance status</label><select id="ecog"><option value="0">0 — Fully active</option><option value="1" selected>1 — Restricted strenuous activity</option><option value="2">2 — Ambulatory, self-care only</option></select></div>
+          <div class="form-group"><label>PD-L1 CPS score</label><input type="number" id="pdl1" value="8" min="0" max="100"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;font-family:var(--mono);letter-spacing:0.08em">GENOMIC MARKERS</div>
+        <div class="checkbox-grid">
+          <label class="cb-item"><input type="checkbox" id="her2" checked> HER2 positive</label>
+          <label class="cb-item"><input type="checkbox" id="msih"> MSI-H</label>
+          <label class="cb-item"><input type="checkbox" id="kras"> KRAS mutation</label>
+          <label class="cb-item"><input type="checkbox" id="braf"> BRAF mutation</label>
+          <label class="cb-item"><input type="checkbox" id="brca"> BRCA mutation</label>
+        </div>
+        <div class="nav-row">
+          <button class="btn" onclick="goTo(2)">‹ Back</button>
+          <button class="btn btn-action" onclick="runModule3()">Match treatment protocol ›</button>
+        </div>
+      </div>
+
+      <div id="panel3r" class="panel" style="display:none;margin-top:12px">
+        <div class="panel-title">Module 3 result — treatment recommendation</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem">
+          <div class="result-card"><div class="result-label">Primary protocol</div><div class="result-value" id="r3protocol">—</div></div>
+          <div class="result-card"><div class="result-label">IO eligibility</div><div class="result-value" id="r3io">—</div></div>
+          <div class="result-card"><div class="result-label">Guideline basis</div><div class="result-value" id="r3guide">—</div></div>
+          <div class="result-card"><div class="result-label">Genomic flag</div><div class="result-value" id="r3genomic">—</div></div>
+        </div>
+        <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;font-family:var(--mono);letter-spacing:0.08em">REGIMENS CONSIDERED</div>
+        <div id="r3regimens" style="margin-bottom:1rem"></div>
+        <hr class="section-divider">
+        <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;font-family:var(--mono);letter-spacing:0.08em">MATCHED CLINICAL TRIALS</div>
+        <div id="r3trials"></div>
+        <div class="nav-row">
+          <button class="btn" onclick="goTo(3)">‹ Back</button>
+          <button class="btn btn-action" onclick="goTo(4)">Generate clinical report ›</button>
+        </div>
+      </div>
+
+      <div id="panel4" class="panel" style="display:none;margin-top:12px">
+        <div class="panel-title">Module 4 — Clinical report</div>
+        <div class="panel-sub">Auto-generated pipeline summary — shareable research document</div>
+        <div style="border:0.5px solid var(--border-green);border-radius:4px;padding:1rem;margin-bottom:1rem;background:var(--bg2)">
+          <div style="font-size:10px;color:var(--text-dim);margin-bottom:10px;letter-spacing:0.1em;font-family:var(--mono)">ONCOSENSEAI MODULE 4 — CLINICAL REPORT</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">
+            <div><div style="font-size:10px;color:var(--text-dim);font-family:var(--mono)">PATIENT ID</div><div style="font-size:13px;font-weight:500;color:var(--text)">PATIENT_001</div></div>
+            <div><div style="font-size:10px;color:var(--text-dim);font-family:var(--mono)">CANCER / STAGE</div><div style="font-size:13px;font-weight:500;color:var(--text)" id="r4cancer">—</div></div>
+            <div><div style="font-size:10px;color:var(--text-dim);font-family:var(--mono)">ECOG STATUS</div><div style="font-size:13px;font-weight:500;color:var(--text)" id="r4ecog">—</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px">
+            <div><div style="font-size:10px;color:var(--text-dim);font-family:var(--mono)">12-MONTH RISK</div><div style="font-size:13px;font-weight:500;color:var(--text)" id="r4risk">—</div></div>
+            <div><div style="font-size:10px;color:var(--text-dim);font-family:var(--mono)">IO ELIGIBILITY</div><div style="font-size:13px;font-weight:500;color:var(--text)" id="r4io">—</div></div>
+          </div>
+          <hr style="border:none;border-top:0.5px solid var(--border);margin:10px 0">
+          <div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;font-family:var(--mono)">TREATMENT PROTOCOL</div>
+          <div style="font-size:14px;font-weight:500;color:var(--green);font-family:var(--mono)" id="r4protocol">—</div>
+          <hr style="border:none;border-top:0.5px solid var(--border);margin:10px 0">
+          <div style="font-size:10px;color:var(--text-dim);margin-bottom:6px;font-family:var(--mono)">MATCHED TRIALS</div>
+          <div id="r4trials" style="font-size:12px;color:var(--text);font-family:var(--mono);line-height:1.8"></div>
+          <hr style="border:none;border-top:0.5px solid var(--border);margin:10px 0">
+          <div style="font-size:10px;color:var(--text-dim);font-family:var(--mono)">Generated: <span id="r4date"></span> · Research use only — not for clinical decisions</div>
+        </div>
+        <div class="nav-row">
+          <button class="btn" onclick="goTo(3)">‹ Back</button>
+          <button class="btn btn-action" onclick="window.location.href='mailto:ramshazubairi81@gmail.com?subject=OncosenseAI IRB Application'">Use in IRB application ↗</button>
+        </div>
+      </div>
+    </div>
+    <!-- END EMBEDDED DEMO -->
+
+  </div>
+</div>
+```
+
+  </div>
+</section>
+
+<!-- COLLABORATE -->
+
+<section class="collab" id="collaborate">
+  <div class="collab-left reveal">
+    <div class="section-tag">Looking for</div>
+    <h2 class="section-h2">Rigorous<br><em>collaborators.</em></h2>
+    <p class="collab-desc">Not investors. Researchers who want to close the gap between academic oncology and the hospitals that don't have a tumor board.</p>
+    <ul class="collab-list">
+      <li>Oncologists to review and stress-test guideline encoding</li>
+      <li>IRB sponsorship for 100-patient prospective pilot</li>
+      <li>Preprint co-authors for MedRxiv submission</li>
+      <li>Clinical AI researchers for validation study design</li>
+    </ul>
+    <div class="collab-not">Not looking for investors. <span>Looking for rigorous collaborators.</span></div>
+  </div>
+  <div class="collab-right reveal" style="transition-delay:0.15s">
+    <div class="collab-card">
+      <div class="collab-card-tag">Next step 01</div>
+      <div class="collab-card-title">IRB pilot — 100 patients</div>
+      <div class="collab-card-desc">Prospective cohort study to validate Module 1 risk stratification against histopathological outcomes.</div>
+    </div>
+    <div class="collab-card">
+      <div class="collab-card-tag">Next step 02</div>
+      <div class="collab-card-title">MedRxiv preprint</div>
+      <div class="collab-card-desc">Full technical write-up of architecture, guideline encoding methodology, and known limitations. DM for early access.</div>
+    </div>
+    <div class="collab-card">
+      <div class="collab-card-tag">Next step 03</div>
+      <div class="collab-card-title">FDA 510(k) pre-submission</div>
+      <div class="collab-card-desc">Exploratory regulatory pathway assessment for clinical decision support classification.</div>
+    </div>
+    <div class="contact-block">
+      <div>
+        <div class="contact-email">ramshazubairi81@gmail.com</div>
+        <div class="contact-sub">Direct. No forms. No waitlists.</div>
+      </div>
+      <a href="mailto:ramshazubairi81@gmail.com" class="btn btn-action" style="white-space:nowrap">Get in touch →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+
+<footer>
+  <div class="footer-left">
+    OncosenseAI · v0.1 · 2024<br>
+    Research prototype. Not validated for clinical use. Not FDA/CE approved.
+  </div>
+  <div class="footer-right">
+    <a href="https://lnkd.in/decpk5mr">LinkedIn ↗</a><br>
+    <span style="color:var(--text-dim)">ramshazubairi81@gmail.com</span>
+  </div>
+</footer>
+
+<script>
+// CURSOR
+var cursor = document.getElementById('cursor');
+var ring = document.getElementById('cursorRing');
+var mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', function(e) {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = (mx - 4) + 'px';
+  cursor.style.top = (my - 4) + 'px';
+});
+function animRing() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px';
+  ring.style.top = ry + 'px';
+  requestAnimationFrame(animRing);
+}
+animRing();
+document.querySelectorAll('button, a, .chip, .pip-step, .module-card, [onclick]').forEach(function(el) {
+  el.addEventListener('mouseenter', function() { cursor.style.transform = 'scale(2.5)'; ring.style.width = '48px'; ring.style.height = '48px'; });
+  el.addEventListener('mouseleave', function() { cursor.style.transform = 'scale(1)'; ring.style.width = '32px'; ring.style.height = '32px'; });
+});
+
+// COUNTERS
+function animCount(el, target, duration, decimals) {
+  var start = 0, step = target / (duration / 16);
+  var t = setInterval(function() {
+    start = Math.min(start + step, target);
+    el.textContent = decimals ? start.toFixed(1) : Math.round(start);
+    if (start >= target) clearInterval(t);
+  }, 16);
+}
+setTimeout(function() {
+  animCount(document.getElementById('cnt1'), 35, 1200, false);
+  animCount(document.getElementById('cnt2'), 4, 800, false);
+  animCount(document.getElementById('cnt3'), 8.8, 1400, true);
+}, 1000);
+
+// TERMINAL TYPEWRITER
+var lines = [
+  { text: '$ oncosense --case gastric-stage3 --her2+ --pdl1 8', cls: 'prompt' },
+  { text: '  Loading NCCN Gastric v2.2024...', cls: 'comment' },
+  { text: '  ✓ Stage III · HER2+ · PD-L1 CPS = 8 · ECOG 1', cls: 'val' },
+  { text: '  → Perioperative FLOT4 + D2 gastrectomy', cls: 'val' },
+  { text: '  → Trastuzumab + CAPOX  [ToGA — Bang et al. 2010]', cls: 'val' },
+  { text: '  → Nivolumab + FOLFOX/CAPOX  [CheckMate-649 · CPS≥5]', cls: 'val' },
+  { text: '  → T-DXd second-line  [DESTINY-Gastric01 · Shitara 2021]', cls: 'val' },
+  { text: '  → 5 matched trials via ClinicalTrials.gov API', cls: 'val' },
+  { text: '  ⚠ Not for clinical use — research prototype only', cls: 'warn' },
+  { text: '  ✓ Report exported: PATIENT_001_report.pdf', cls: 'val' },
+];
+var termLines = document.getElementById('termLines');
+var li = 0, ci = 0;
+function typeNext() {
+  if (li >= lines.length) {
+    termLines.innerHTML += '<div class="terminal-line"><span class="cursor-blink"></span></div>';
+    return;
+  }
+  var line = lines[li];
+  if (ci === 0) {
+    termLines.innerHTML += '<div class="terminal-line" id="tl' + li + '"></div>';
+  }
+  var el = document.getElementById('tl' + li);
+  if (ci < line.text.length) {
+    el.innerHTML = '<span class="' + line.cls + '">' + line.text.slice(0, ci + 1) + '</span><span class="cursor-blink"></span>';
+    ci++;
+    setTimeout(typeNext, ci === 1 ? 120 : 22);
+  } else {
+    el.innerHTML = '<span class="' + line.cls + '">' + line.text + '</span>';
+    li++; ci = 0;
+    setTimeout(typeNext, 180);
+  }
+}
+setTimeout(typeNext, 1400);
+
+// SCROLL REVEAL
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting) { e.target.classList.add('visible'); }
+  });
+}, { threshold: 0.1 });
+
+['stat1','stat2','stat3','stat4'].forEach(function(id, i) {
+  var el = document.getElementById(id);
+  if (el) { el.style.transitionDelay = (i * 0.1) + 's'; observer.observe(el); }
+});
+['mc1','mc2','mc3','mc4'].forEach(function(id, i) {
+  var el = document.getElementById(id);
+  if (el) { el.style.transitionDelay = (i * 0.12) + 's'; observer.observe(el); }
+});
+['lim1','lim2','lim3','lim4','lim5','lim6'].forEach(function(id, i) {
+  var el = document.getElementById(id);
+  if (el) { el.style.transitionDelay = (i * 0.08) + 's'; observer.observe(el); }
+});
+document.querySelectorAll('.reveal').forEach(function(el) { observer.observe(el); });
+
+// DEMO LOGIC
+var demoState = { step:1, riskScore:0, riskLabel:'', protocol:'', io:'', guide:'', genomicFlag:'', regimens:[], trials:[], ecog:'1', stage:'III', ctShort:'Gastric' };
+var imgResults = {
+  stool:{ text:'Occult blood signal detected (moderate). Colour profile: dark red-brown. Concern level: HIGH. Recommend urgent colonoscopy.' },
+  urine:{ text:'Haematuria marker present. Colour: dark amber. Protein signal: elevated. Concern level: MODERATE. Urological review advised.' },
+  abdomen:{ text:'Soft-tissue density variation detected in left upper quadrant. Symmetry score: 0.61. Concern level: MODERATE. Cross-sectional imaging recommended.' }
+};
+
+function toggleChip(el) { el.classList.toggle('sel'); }
+
+function runModule1() {
+  var chips = document.querySelectorAll('.chip.sel');
+  var score = 0;
+  chips.forEach(function(c) { score += parseInt(c.dataset.w); });
+  var age = parseInt(document.getElementById('age').value) || 58;
+  var fhx = parseInt(document.getElementById('fhx').value) || 0;
+  var pgid = parseInt(document.getElementById('pgid').value) || 0;
+  var dur = parseInt(document.getElementById('dur').value) || 1;
+  score += (age > 50 ? 2 : 0) + (fhx ? 2 : 0) + (pgid ? 1 : 0) + (dur * 0.5);
+  var pct = Math.min(Math.round((score / 22) * 100), 95);
+  demoState.riskScore = pct;
+  var label, color, note;
+  if (pct >= 65) { label = 'High risk'; color = '#E24B4A'; note = 'Urgent endoscopic evaluation recommended.'; }
+  else if (pct >= 35) { label = 'Intermediate risk'; color = '#EF9F27'; note = 'Further investigation indicated.'; }
+  else { label = 'Low risk'; color = '#1D9E75'; note = 'Watchful waiting with reassessment in 4 weeks.'; }
+  demoState.riskLabel = label;
+  document.getElementById('riskPct').textContent = pct + '%';
+  var badgeColor = pct >= 65 ? 'rgba(226,75,74,0.15)' : pct >= 35 ? 'rgba(239,159,39,0.15)' : 'rgba(29,158,117,0.15)';
+  var textColor = pct >= 65 ? '#E24B4A' : pct >= 35 ? '#EF9F27' : '#1D9E75';
+  document.getElementById('riskBadge').innerHTML = '<span class="badge" style="background:' + badgeColor + ';color:' + textColor + '">' + label + '</span>';
+  document.getElementById('riskNote').textContent = note;
+  document.getElementById('riskFill').style.width = pct + '%';
+  document.getElementById('riskFill').style.background = color;
+  var circ = 2 * Math.PI * 28;
+  document.getElementById('riskArc').setAttribute('stroke-dasharray', (pct / 100 * circ).toFixed(1) + ' ' + circ);
+  document.getElementById('riskArc').setAttribute('stroke', color);
+  var drivers = [];
+  if (age > 50) drivers.push('age >50');
+  chips.forEach(function(c) { drivers.push(c.textContent.trim()); });
+  if (fhx) drivers.push('family history');
+  if (pgid) drivers.push('prior GI diagnosis');
+  document.getElementById('riskDrivers').textContent = 'KEY DRIVERS: ' + drivers.slice(0, 5).join(' · ') + (drivers.length > 5 ? ' +' + (drivers.length - 5) + ' more' : '');
+  document.getElementById('panel1r').style.display = 'block';
+  document.getElementById('s1').classList.add('done');
+  document.getElementById('s2').classList.remove('locked');
+}
+
+function selectImage(el, type) {
+  var res = imgResults[type];
+  el.style.borderColor = '#1D9E75';
+  document.getElementById(type + 'Status').textContent = 'Analysed ✓';
+  document.getElementById(type + 'Status').style.color = '#1D9E75';
+  document.getElementById('imgResult').style.display = 'block';
+  document.getElementById('imgResultText').textContent = res.text;
+}
+
+function runModule3() {
+  var ct = document.getElementById('ctype').value;
+  var stage = document.getElementById('cstage').value;
+  var ecog = document.getElementById('ecog').value;
+  var pdl1 = parseInt(document.getElementById('pdl1').value) || 0;
+  var her2 = document.getElementById('her2').checked;
+  var msih = document.getElementById('msih').checked;
+  var ctShort = ct.replace(' adenocarcinoma', '');
+  var proto, io, guide, gflag, regs, trials;
+  if (stage === 'III') { proto = 'Perioperative FLOT4 + D2 gastrectomy'; guide = 'NCCN Gastric v2.2024 / ESMO 2022'; }
+  else if (stage === 'IV') { proto = her2 ? 'Trastuzumab + CAPOX (ToGA — first line)' : 'FOLFOX / CAPOX (first line)'; guide = 'NCCN Gastric v2.2024 / CheckMate-649'; }
+  else { proto = 'Surgical resection + adjuvant CAPOX'; guide = 'NCCN Gastric v2.2024'; }
+  io = pdl1 >= 5 ? 'Eligible (CPS ' + pdl1 + ' ≥5 — nivolumab + chemo)' : 'Not eligible (CPS ' + pdl1 + ' <5)';
+  gflag = her2 ? 'HER2+ → trastuzumab backbone indicated' : msih ? 'MSI-H → pembrolizumab eligible' : 'No actionable genomic flag';
+  regs = ['FLOT4 (standard perioperative)', 'CAPOX (alternative)'];
+  if (her2) regs.push('Trastuzumab + CAPOX (HER2+ — ToGA)', 'T-DXd (2nd line — DESTINY-Gastric01)');
+  if (pdl1 >= 5) regs.push('Nivolumab + FOLFOX/CAPOX (CPS ≥5 — CheckMate-649)');
+  if (msih) regs.push('Pembrolizumab + chemo (MSI-H — KEYNOTE-590)');
+  trials = [
+    { id: 'NCT05769725', title: 'Serplulimab + Docetaxel/S-1 adjuvant — gastric cancer', phase: 'Phase 2' },
+    { id: 'NCT07023315', title: 'Cadonilimab + SOX perioperative — resectable G/GEJ', phase: 'Phase 3' },
+    { id: 'NCT04871412', title: 'Thoracic perioperative integrative surgical care — Stage III', phase: 'Phase 3' }
+  ];
+  demoState.protocol = proto; demoState.io = io; demoState.guide = guide; demoState.genomicFlag = gflag;
+  demoState.regimens = regs; demoState.trials = trials; demoState.ecog = ecog; demoState.stage = stage; demoState.ctShort = ctShort;
+  document.getElementById('r3protocol').textContent = proto;
+  document.getElementById('r3io').innerHTML = '<span class="badge ' + (pdl1 >= 5 ? 'badge-teal' : 'badge-amber') + '">' + io + '</span>';
+  document.getElementById('r3guide').textContent = guide;
+  document.getElementById('r3genomic').textContent = gflag;
+  var rHtml = '';
+  regs.forEach(function(r) { rHtml += '<div style="font-size:12px;color:var(--text-mid);padding:4px 0;border-bottom:0.5px solid var(--border);font-family:var(--mono)">' + r + '</div>'; });
+  document.getElementById('r3regimens').innerHTML = rHtml;
+  var tHtml = '';
+  trials.forEach(function(t) { tHtml += '<div class="trial-row"><div><div style="font-size:12px;font-weight:500;color:var(--text);font-family:var(--mono)">' + t.id + '</div><div style="font-size:11px;color:var(--text-dim);margin-top:2px">' + t.title + '</div></div><span class="badge badge-blue">' + t.phase + '</span></div>'; });
+  document.getElementById('r3trials').innerHTML = tHtml;
+  document.getElementById('panel3r').style.display = 'block';
+  document.getElementById('s3').classList.add('done');
+  document.getElementById('s4').classList.remove('locked');
+}
+
+function goTo(n) {
+  if (n === 2 && document.getElementById('s2').classList.contains('locked')) return;
+  if (n === 3 && document.getElementById('s3').classList.contains('locked')) return;
+  if (n === 4 && document.getElementById('s4').classList.contains('locked')) return;
+  [1, 2, 3, 4].forEach(function(i) {
+    var p = document.getElementById('panel' + i); if (p) p.style.display = 'none';
+    var pr = document.getElementById('panel' + i + 'r'); if (pr) pr.style.display = 'none';
+  });
+  var target = document.getElementById('panel' + n);
+  if (target) target.style.display = 'block';
+  [1, 2, 3, 4].forEach(function(i) {
+    var s = document.getElementById('s' + i);
+    if (s) { s.classList.remove('active'); if (i === n) s.classList.add('active'); }
+  });
+  if (n === 4) { buildReport(); }
+  demoState.step = n;
+}
+
+function buildReport() {
+  var d = new Date();
+  document.getElementById('r4date').textContent = d.toISOString().split('T')[0];
+  document.getElementById('r4cancer').textContent = (demoState.ctShort || 'Gastric') + ' Stage ' + (demoState.stage || 'III');
+  document.getElementById('r4ecog').textContent = 'ECOG ' + (demoState.ecog || '1');
+  document.getElementById('r4risk').textContent = demoState.riskScore ? demoState.riskScore + '% (' + demoState.riskLabel + ')' : 'See Module 1';
+  document.getElementById('r4io').textContent = demoState.io || '—';
+  document.getElementById('r4protocol').textContent = demoState.protocol || '—';
+  var tHtml = '';
+  (demoState.trials || []).forEach(function(t, i) { tHtml += (i + 1) + '. ' + t.id + ' — ' + t.title + '<br>'; });
+  document.getElementById('r4trials').innerHTML = tHtml || 'Run Module 3 to populate trials';
+  document.getElementById('s4').classList.add('done');
+}
+</script>
+
+</body>
+</html>
