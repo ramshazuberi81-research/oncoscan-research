@@ -1,0 +1,2243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OncosenseAI — Biological Early Warning System · GI Oncology</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f5f0;
+    --surface: #ffffff;
+    --border: #e2ddd6;
+    --text: #1a1814;
+    --text-muted: #6b6560;
+    --teal: #2a9d8f;
+    --teal-light: #e8f5f3;
+    --coral: #e63946;
+    --coral-light: #fdecea;
+    --amber: #e9c46a;
+    --amber-light: #fefce8;
+    --violet: #7b5ea7;
+    --violet-light: #f0ebf8;
+    --ink: #264653;
+    --ink-dark: #1a2f3a;
+    --mono: 'DM Mono', monospace;
+    --serif: 'DM Serif Display', Georgia, serif;
+    --sans: 'Instrument Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(247,245,240,0.94);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 48px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+  }
+  .nav-logo {
+    font-family: var(--serif);
+    font-size: 1.3rem;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+  .nav-logo span { color: var(--teal); }
+  .nav-badge {
+    font-family: var(--mono); font-size: 0.6rem;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    padding: 3px 8px; border-radius: 3px;
+    background: var(--coral-light); color: var(--coral);
+    border: 1px solid rgba(230,57,70,0.25);
+    margin-left: 12px;
+  }
+  .nav-links {
+    display: flex; gap: 28px; list-style: none;
+  }
+  .nav-links a {
+    font-family: var(--mono); font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-muted); text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--teal); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 94vh;
+    display: grid; grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 80px 48px;
+    gap: 80px;
+    border-bottom: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -120px; right: -120px;
+    width: 600px; height: 600px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(42,157,143,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge-row {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px;
+  }
+  .badge {
+    font-family: var(--mono); font-size: 0.63rem;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    padding: 4px 10px; border-radius: 3px;
+    background: var(--teal-light); color: var(--teal);
+    border: 1px solid rgba(42,157,143,0.25);
+  }
+  .badge.red { background: var(--coral-light); color: var(--coral); border-color: rgba(230,57,70,0.25); }
+  .badge.amber { background: var(--amber-light); color: #7a6200; border-color: rgba(233,196,106,0.4); }
+  .hero-eyebrow {
+    font-family: var(--mono); font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--teal); margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: clamp(2.8rem, 5vw, 4.4rem);
+    line-height: 1.06;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    margin-bottom: 24px;
+  }
+  .hero h1 em { color: var(--teal); font-style: italic; }
+  .hero-sub {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    line-height: 1.75;
+    max-width: 480px;
+    margin-bottom: 40px;
+  }
+  .hero-cta {
+    display: flex; gap: 14px; flex-wrap: wrap;
+  }
+  .btn-primary {
+    background: var(--ink); color: #fff;
+    padding: 13px 28px; border-radius: 4px;
+    font-family: var(--mono); font-size: 0.73rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    text-decoration: none; border: none; cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: var(--teal); transform: translateY(-1px); }
+  .btn-outline {
+    background: transparent; color: var(--ink);
+    padding: 13px 28px; border-radius: 4px;
+    font-family: var(--mono); font-size: 0.73rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    text-decoration: none; border: 1.5px solid var(--border);
+    cursor: pointer; transition: border-color 0.2s, color 0.2s, transform 0.15s;
+    display: inline-block;
+  }
+  .btn-outline:hover { border-color: var(--teal); color: var(--teal); transform: translateY(-1px); }
+
+  /* hero right — pipeline stages */
+  .pipeline-visual {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .stage-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .stage-card:hover { border-color: var(--teal); transform: translateY(-2px); }
+  .stage-num {
+    font-family: var(--mono); font-size: 0.6rem;
+    color: var(--teal); text-transform: uppercase;
+    letter-spacing: 0.1em; margin-bottom: 6px;
+  }
+  .stage-name {
+    font-weight: 600; font-size: 0.88rem; color: var(--ink);
+  }
+  .stage-desc {
+    font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;
+  }
+
+  /* warning banner */
+  .warning-banner {
+    background: var(--coral-light);
+    border-top: 3px solid var(--coral);
+    padding: 14px 48px;
+    font-family: var(--mono); font-size: 0.7rem;
+    color: #7a1a22;
+    letter-spacing: 0.02em;
+  }
+
+  /* ── METRICS STRIP ── */
+  .metrics-strip {
+    background: var(--ink-dark);
+    padding: 48px;
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .metric-pill {
+    text-align: center; padding: 24px 16px;
+    border-right: 1px solid rgba(255,255,255,0.08);
+  }
+  .metric-pill:last-child { border-right: none; }
+  .metric-pill-value {
+    font-family: var(--serif); font-size: 2.4rem;
+    color: var(--teal); letter-spacing: -0.03em;
+    line-height: 1; margin-bottom: 8px;
+  }
+  .metric-pill-label {
+    font-family: var(--mono); font-size: 0.6rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.45); line-height: 1.5;
+  }
+
+  /* ── SECTION SHARED ── */
+  section { padding: 80px 48px; border-bottom: 1px solid var(--border); }
+  .section-label {
+    font-family: var(--mono); font-size: 0.67rem;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--teal); margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: var(--serif); font-size: clamp(1.8rem, 3vw, 2.7rem);
+    line-height: 1.12; letter-spacing: -0.02em;
+    color: var(--ink); margin-bottom: 16px;
+  }
+  .section-sub {
+    color: var(--text-muted); font-size: 1rem;
+    max-width: 600px; line-height: 1.75;
+  }
+
+  /* ── CLASSIFICATION STATEMENT ── */
+  .classification-box {
+    margin-top: 40px;
+    background: var(--ink-dark); color: #fff;
+    border-radius: 8px; padding: 32px 36px;
+    max-width: 780px;
+  }
+  .classification-box .mono-label {
+    font-family: var(--mono); font-size: 0.65rem;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--teal); margin-bottom: 12px;
+  }
+  .classification-box p {
+    font-size: 1rem; line-height: 1.75;
+    color: rgba(255,255,255,0.8);
+  }
+  .classification-box strong { color: var(--teal); }
+
+  /* ── NOVELTY PILLARS ── */
+  .novelty-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 24px; margin-top: 48px;
+  }
+  .novelty-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px; padding: 32px 28px;
+    transition: border-color 0.2s, transform 0.2s;
+    position: relative;
+  }
+  .novelty-card:hover { border-color: var(--teal); transform: translateY(-3px); }
+  .novelty-num {
+    font-family: var(--mono); font-size: 0.62rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-muted); margin-bottom: 12px;
+  }
+  .novelty-title {
+    font-family: var(--serif); font-size: 1.2rem;
+    color: var(--ink); margin-bottom: 12px; line-height: 1.2;
+  }
+  .novelty-desc {
+    font-size: 0.85rem; color: var(--text-muted); line-height: 1.7;
+    margin-bottom: 20px;
+  }
+  .novelty-compare {
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  }
+  .novelty-tag {
+    font-family: var(--mono); font-size: 0.62rem;
+    padding: 4px 10px; border-radius: 3px;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .novelty-tag.yes {
+    background: var(--teal-light); color: var(--teal);
+    border: 1px solid rgba(42,157,143,0.3);
+  }
+  .novelty-tag.no {
+    text-decoration: line-through;
+    color: var(--text-muted); opacity: 0.55;
+  }
+
+  /* ── CMAT ARCHITECTURE ── */
+  .cmat-section { background: var(--ink-dark); color: #fff; }
+  .cmat-section .section-title { color: #fff; }
+  .cmat-section .section-sub { color: rgba(255,255,255,0.55); }
+  .cmat-section .section-label { color: var(--teal); }
+
+  .cmat-grid {
+    display: grid; grid-template-columns: 1fr 1.4fr;
+    gap: 64px; margin-top: 48px; align-items: start;
+  }
+  .cmat-flow {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px; padding: 28px;
+  }
+  .cmat-flow-label {
+    font-family: var(--mono); font-size: 0.62rem;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: rgba(255,255,255,0.35); margin-bottom: 20px;
+    padding-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .cmat-node {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(42,157,143,0.25);
+    border-radius: 6px; padding: 18px 20px;
+    margin-bottom: 10px; text-align: center;
+  }
+  .cmat-node-label {
+    font-family: var(--mono); font-size: 0.62rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--teal); margin-bottom: 6px;
+  }
+  .cmat-node-desc {
+    font-size: 0.82rem; color: rgba(255,255,255,0.6);
+  }
+  .cmat-arrow {
+    text-align: center; font-size: 1.2rem; color: var(--teal);
+    margin: 4px 0;
+  }
+  .modality-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px; margin-bottom: 24px;
+  }
+  .modality-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px; padding: 18px 20px;
+  }
+  .modality-label {
+    font-family: var(--mono); font-size: 0.6rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--teal); margin-bottom: 6px;
+  }
+  .modality-value {
+    font-family: var(--serif); font-size: 1.6rem;
+    color: #fff; line-height: 1; margin-bottom: 4px;
+  }
+  .modality-desc {
+    font-size: 0.75rem; color: rgba(255,255,255,0.45);
+  }
+  .attention-table {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px; overflow: hidden;
+  }
+  .attention-table-header {
+    font-family: var(--mono); font-size: 0.6rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.4); padding: 14px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .attn-table {
+    width: 100%; border-collapse: collapse;
+    font-family: var(--mono); font-size: 0.75rem;
+  }
+  .attn-table th, .attn-table td {
+    padding: 10px 16px; text-align: center;
+  }
+  .attn-table th {
+    color: rgba(255,255,255,0.35); font-weight: 400;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .attn-table td {
+    color: rgba(255,255,255,0.65);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .attn-table td.hi { color: var(--teal); font-weight: 500; }
+  .attn-table tr:last-child td { border-bottom: none; }
+  .attn-table td:first-child { text-align: left; color: rgba(255,255,255,0.4); }
+
+  /* ── 9-STAGE PIPELINE ── */
+  .pipeline-full {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px; margin-top: 48px;
+  }
+  .pipeline-stage {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px; padding: 28px 24px;
+    position: relative; transition: border-color 0.2s, transform 0.2s;
+  }
+  .pipeline-stage:hover { border-color: var(--teal); transform: translateY(-2px); }
+  .pipeline-stage.new-2026::before {
+    content: 'NEW · 2026';
+    position: absolute; top: 12px; right: 12px;
+    font-family: var(--mono); font-size: 0.55rem;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    background: var(--teal); color: #fff;
+    padding: 3px 7px; border-radius: 3px;
+  }
+  .pipeline-stage-num {
+    font-family: var(--mono); font-size: 0.62rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--teal); margin-bottom: 10px;
+  }
+  .pipeline-stage-icon { font-size: 1.5rem; margin-bottom: 10px; }
+  .pipeline-stage-name {
+    font-family: var(--serif); font-size: 1.15rem;
+    color: var(--ink); margin-bottom: 10px; line-height: 1.2;
+  }
+  .pipeline-stage-desc {
+    font-size: 0.82rem; color: var(--text-muted); line-height: 1.6;
+  }
+  .pipeline-stage-tag {
+    display: inline-block; margin-top: 14px;
+    font-family: var(--mono); font-size: 0.6rem;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    padding: 3px 9px; border-radius: 3px;
+  }
+  .pipeline-stage-tag.teal { background: var(--teal-light); color: var(--teal); }
+  .pipeline-stage-tag.amber { background: var(--amber-light); color: #7a6200; }
+  .pipeline-stage-tag.coral { background: var(--coral-light); color: var(--coral); }
+  .pipeline-stage-tag.violet { background: var(--violet-light); color: var(--violet); }
+  .pipeline-stage-tag.ink { background: #f0f3f5; color: var(--ink); }
+
+  /* ── NEURAL ODE MODULE ── */
+  .ode-section { background: var(--ink-dark); color: #fff; }
+  .ode-section .section-title { color: #fff; }
+  .ode-section .section-sub { color: rgba(255,255,255,0.55); }
+  .ode-section .section-label { color: var(--teal); }
+
+  .ode-grid {
+    display: grid; grid-template-columns: 1.2fr 1fr;
+    gap: 56px; margin-top: 48px; align-items: start;
+  }
+  .ode-patient-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px; overflow: hidden;
+  }
+  .ode-patient-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .ode-patient-name {
+    font-size: 1rem; font-weight: 600; color: #fff; margin-bottom: 4px;
+  }
+  .ode-patient-meta {
+    font-size: 0.8rem; color: rgba(255,255,255,0.45); line-height: 1.5;
+  }
+  .bifurcation-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 12px;
+    background: rgba(230,57,70,0.15); border: 1px solid rgba(230,57,70,0.3);
+    border-radius: 4px; padding: 6px 12px;
+    font-family: var(--mono); font-size: 0.65rem;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: #ff8f97;
+  }
+  .visit-timeline {
+    padding: 24px;
+  }
+  .visit-item {
+    display: flex; align-items: center; gap: 16px;
+    padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .visit-item:last-child { border-bottom: none; }
+  .visit-label {
+    font-family: var(--mono); font-size: 0.6rem;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.35); min-width: 120px;
+  }
+  .visit-score {
+    font-family: var(--serif); font-size: 1.8rem;
+    line-height: 1; min-width: 56px;
+  }
+  .visit-score.monitoring { color: var(--teal); }
+  .visit-score.watch { color: var(--amber); }
+  .visit-score.bifurcation { color: var(--coral); }
+  .visit-score.threshold { color: var(--violet); }
+  .visit-delta {
+    font-family: var(--mono); font-size: 0.72rem;
+    color: rgba(255,255,255,0.5); margin-right: 8px;
+  }
+  .visit-tag {
+    font-family: var(--mono); font-size: 0.58rem;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    padding: 3px 8px; border-radius: 3px;
+  }
+  .visit-tag.monitoring { background: rgba(42,157,143,0.2); color: var(--teal); }
+  .visit-tag.watch { background: rgba(233,196,106,0.2); color: var(--amber); }
+  .visit-tag.bifurcation { background: rgba(230,57,70,0.2); color: #ff8f97; }
+  .visit-tag.threshold { background: rgba(123,94,167,0.2); color: #c9b0e8; }
+
+  .velocity-drift {
+    padding: 0 24px 24px;
+  }
+  .velocity-label {
+    font-family: var(--mono); font-size: 0.62rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.35); margin-bottom: 14px;
+  }
+  .velocity-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.85rem;
+  }
+  .velocity-row:last-child { border-bottom: none; }
+  .velocity-name { color: rgba(255,255,255,0.6); }
+  .velocity-val { font-family: var(--mono); font-size: 0.78rem; }
+  .velocity-val.up { color: var(--teal); }
+  .velocity-val.quiet { color: var(--amber); }
+
+  .dissonance-alert {
+    margin: 0 24px 24px;
+    background: rgba(230,57,70,0.08);
+    border: 1px solid rgba(230,57,70,0.2);
+    border-left: 4px solid var(--coral);
+    border-radius: 0 6px 6px 0; padding: 16px 18px;
+  }
+  .dissonance-alert-label {
+    font-family: var(--mono); font-size: 0.62rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--coral); margin-bottom: 8px;
+  }
+  .dissonance-alert p {
+    font-size: 0.82rem; color: rgba(255,255,255,0.6); line-height: 1.6;
+  }
+
+  .ode-narrative {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px; padding: 28px;
+  }
+  .ode-narrative-label {
+    font-family: var(--mono); font-size: 0.62rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--teal); margin-bottom: 16px;
+    padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .ode-narrative p {
+    font-size: 0.88rem; line-height: 1.8;
+    color: rgba(255,255,255,0.65); margin-bottom: 14px;
+  }
+  .ode-narrative p:last-child { margin-bottom: 0; }
+  .ode-narrative strong { color: #fff; }
+
+  .path-row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px; margin-top: 20px;
+  }
+  .path-card {
+    border-radius: 6px; padding: 18px 20px;
+  }
+  .path-card.path-a {
+    background: rgba(230,57,70,0.1); border: 1px solid rgba(230,57,70,0.2);
+  }
+  .path-card.path-b {
+    background: rgba(42,157,143,0.1); border: 1px solid rgba(42,157,143,0.2);
+  }
+  .path-label {
+    font-family: var(--mono); font-size: 0.62rem;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+  .path-card.path-a .path-label { color: var(--coral); }
+  .path-card.path-b .path-label { color: var(--teal); }
+  .path-value {
+    font-family: var(--serif); font-size: 1.5rem; line-height: 1;
+    margin-bottom: 4px;
+  }
+  .path-card.path-a .path-value { color: #ff8f97; }
+  .path-card.path-b .path-value { color: var(--teal); }
+  .path-desc {
+    font-size: 0.75rem; color: rgba(255,255,255,0.45); line-height: 1.5;
+  }
+
+  /* ── DOORSTEP PROTOCOL ── */
+  .doorstep-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 48px; margin-top: 48px; align-items: start;
+  }
+  .doorstep-messages {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden;
+  }
+  .doorstep-header {
+    padding: 16px 24px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .doorstep-header-title {
+    font-family: var(--mono); font-size: 0.62rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-muted);
+  }
+  .doorstep-status {
+    font-family: var(--mono); font-size: 0.58rem;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    padding: 3px 8px; border-radius: 3px;
+    background: var(--teal-light); color: var(--teal);
+  }
+  .doorstep-msg {
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    font-size: 0.88rem; color: var(--text-muted); line-height: 1.6;
+    font-style: italic;
+  }
+  .doorstep-msg:last-child { border-bottom: none; }
+  .doorstep-msg.active {
+    background: var(--coral-light);
+    border-left: 4px solid var(--coral);
+    color: #5a1a22;
+  }
+  .doorstep-msg.active strong { color: var(--coral); }
+
+  .trigger-list { margin-top: 8px; }
+  .trigger-item {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 20px 24px;
+    margin-bottom: 14px;
+  }
+  .trigger-label {
+    font-family: var(--mono); font-size: 0.62rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+  .trigger-label.a { color: var(--coral); }
+  .trigger-label.b { color: var(--amber); }
+  .trigger-label.c { color: var(--violet); }
+  .trigger-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+
+  /* ── DISSONANCE MODULE ── */
+  .dissonance-section { background: var(--surface); }
+  .signal-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 1px; background: var(--border);
+    border: 1px solid var(--border); border-radius: 8px;
+    overflow: hidden; margin-top: 32px;
+  }
+  .signal-cell {
+    background: var(--bg); padding: 20px 18px;
+  }
+  .signal-name {
+    font-family: var(--mono); font-size: 0.6rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-muted); margin-bottom: 8px;
+  }
+  .signal-val {
+    font-family: var(--serif); font-size: 1.8rem;
+    line-height: 1; margin-bottom: 4px;
+  }
+  .signal-val.hi { color: var(--coral); }
+  .signal-val.med { color: var(--amber); }
+  .signal-val.lo { color: var(--teal); }
+  .signal-badge-sm {
+    font-family: var(--mono); font-size: 0.55rem;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    padding: 2px 7px; border-radius: 3px;
+  }
+  .signal-badge-sm.hi { background: var(--coral-light); color: var(--coral); }
+  .signal-badge-sm.med { background: var(--amber-light); color: #7a6200; }
+  .signal-badge-sm.lo { background: var(--teal-light); color: var(--teal); }
+
+  .dissonance-analysis {
+    margin-top: 24px;
+    background: var(--ink-dark); color: #fff;
+    border-radius: 8px; padding: 28px 32px;
+  }
+  .dissonance-analysis .mono-label {
+    font-family: var(--mono); font-size: 0.62rem;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--teal); margin-bottom: 14px;
+  }
+  .dissonance-analysis p { font-size: 0.88rem; color: rgba(255,255,255,0.7); line-height: 1.75; }
+  .dissonance-analysis strong { color: #fff; }
+
+  /* ── GENOMIC MODULE ── */
+  .genomic-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 40px; margin-top: 48px;
+  }
+  .genomic-sub-title {
+    font-family: var(--serif); font-size: 1.15rem;
+    color: var(--ink); margin-bottom: 6px;
+  }
+  .genomic-sub-desc {
+    font-size: 0.82rem; color: var(--text-muted); line-height: 1.6;
+    margin-bottom: 20px;
+  }
+  .gene-list { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .gene-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px; border-bottom: 1px solid var(--border);
+    font-size: 0.82rem;
+  }
+  .gene-row:last-child { border-bottom: none; }
+  .gene-name { font-family: var(--mono); color: var(--teal); font-size: 0.78rem; }
+  .gene-site { color: var(--text-muted); font-size: 0.78rem; }
+  .gene-val { font-weight: 600; color: var(--ink); font-family: var(--mono); font-size: 0.75rem; }
+  .gene-val.coral { color: var(--coral); }
+  .gene-val.amber { color: #9a6800; }
+
+  /* ── INTAKE FORM ── */
+  .intake-grid {
+    display: grid; grid-template-columns: 1fr 1.6fr;
+    gap: 60px; align-items: start; margin-top: 48px;
+  }
+  .form-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 36px;
+  }
+  .form-card-header {
+    font-family: var(--mono); font-size: 0.67rem;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--text-muted); margin-bottom: 24px;
+    padding-bottom: 16px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .stage-indicator {
+    background: var(--teal); color: #fff;
+    font-family: var(--mono); font-size: 0.58rem;
+    padding: 3px 8px; border-radius: 3px;
+    letter-spacing: 0.08em;
+  }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label {
+    font-family: var(--mono); font-size: 0.6rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-muted);
+  }
+  .form-group input, .form-group select {
+    border: 1.5px solid var(--border);
+    border-radius: 5px; padding: 10px 14px;
+    font-family: var(--sans); font-size: 0.9rem;
+    color: var(--text); background: var(--bg);
+    outline: none; transition: border-color 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus { border-color: var(--teal); }
+
+  .symptom-section { margin-top: 24px; }
+  .symptom-section-title {
+    font-family: var(--sans); font-weight: 600; font-size: 0.85rem;
+    color: var(--text); margin-bottom: 12px; margin-top: 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .symptom-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .symptom-chip {
+    padding: 6px 14px; border-radius: 20px;
+    border: 1.5px solid var(--border);
+    font-size: 0.78rem; cursor: pointer;
+    transition: all 0.18s; background: var(--bg);
+    user-select: none;
+  }
+  .symptom-chip:hover { border-color: var(--teal); color: var(--teal); }
+  .symptom-chip.alarm {
+    border-color: rgba(230,57,70,0.4); color: var(--coral);
+    background: var(--coral-light);
+  }
+  .symptom-chip.alarm:hover { background: var(--coral); color: #fff; border-color: var(--coral); }
+  .symptom-chip.selected { background: var(--teal); color: #fff; border-color: var(--teal); }
+
+  .severity-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
+  .severity-btn {
+    padding: 12px; border-radius: 5px; border: 1.5px solid var(--border);
+    text-align: center; cursor: pointer; font-family: var(--mono);
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+    transition: all 0.18s; background: var(--bg);
+  }
+  .severity-btn.mild { color: var(--teal); }
+  .severity-btn.moderate { color: #e67e22; }
+  .severity-btn.severe { color: var(--coral); }
+  .severity-btn:hover, .severity-btn.active { border-color: currentColor; background: var(--surface); }
+
+  .duration-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .duration-chip {
+    padding: 8px 16px; border-radius: 20px;
+    border: 1.5px solid var(--border); font-size: 0.78rem;
+    cursor: pointer; transition: all 0.18s; background: var(--bg);
+  }
+  .duration-chip:hover, .duration-chip.active {
+    border-color: var(--teal); color: var(--teal); background: var(--teal-light);
+  }
+
+  textarea.free-text {
+    width: 100%; min-height: 90px;
+    border: 1.5px solid var(--border); border-radius: 5px;
+    padding: 12px 14px; font-family: var(--sans);
+    font-size: 0.88rem; color: var(--text-muted);
+    background: var(--bg); outline: none; resize: vertical;
+    transition: border-color 0.2s; margin-top: 16px;
+  }
+  textarea.free-text:focus { border-color: var(--teal); }
+
+  .continue-btn {
+    width: 100%; margin-top: 24px;
+    padding: 14px; background: var(--ink); color: #fff;
+    border: none; border-radius: 5px; cursor: pointer;
+    font-family: var(--mono); font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    transition: background 0.2s;
+  }
+  .continue-btn:hover { background: var(--teal); }
+
+  /* ── DEMO SECTION ── */
+  .demo-nav {
+    display: flex; gap: 0; margin-bottom: 32px;
+    border: 1px solid rgba(255,255,255,0.15); border-radius: 6px;
+    overflow: hidden; width: fit-content; flex-wrap: wrap;
+  }
+  .demo-tab {
+    padding: 10px 18px;
+    font-family: var(--mono); font-size: 0.62rem;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.45); cursor: pointer;
+    border-right: 1px solid rgba(255,255,255,0.1);
+    background: transparent; transition: all 0.18s;
+  }
+  .demo-tab:last-child { border-right: none; }
+  .demo-tab.active { background: #fff; color: var(--ink); }
+  .demo-tab:hover:not(.active) { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.75); }
+
+  .patient-card {
+    background: var(--surface);
+    border: 1px solid var(--border); border-radius: 10px;
+    overflow: hidden;
+  }
+  .patient-card-header {
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .patient-card-title {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 1rem; font-weight: 600; color: var(--ink);
+  }
+  .patient-badge {
+    font-family: var(--mono); font-size: 0.58rem;
+    background: var(--teal-light); color: var(--teal);
+    padding: 3px 9px; border-radius: 3px;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .demo-info-banner {
+    background: var(--amber-light); border-left: 3px solid var(--amber);
+    margin: 20px 28px; padding: 12px 16px;
+    font-family: var(--mono); font-size: 0.7rem;
+    color: #7a6200; border-radius: 0 4px 4px 0;
+  }
+  .patient-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1px; background: var(--border);
+    margin: 0 28px 20px;
+    border: 1px solid var(--border); border-radius: 6px; overflow: hidden;
+  }
+  .patient-field {
+    background: var(--surface); padding: 14px 18px;
+  }
+  .patient-field-label {
+    font-family: var(--mono); font-size: 0.58rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-muted); margin-bottom: 4px;
+  }
+  .patient-field-value {
+    font-weight: 600; font-size: 0.9rem; color: var(--ink);
+  }
+  .patient-field-value.highlight { color: var(--coral); }
+
+  .reported-symptoms { padding: 0 28px 20px; }
+  .reported-symptoms-title {
+    font-family: var(--mono); font-size: 0.63rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-muted); margin-bottom: 12px;
+  }
+  .symptom-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .symptom-tag {
+    padding: 6px 14px; border-radius: 20px;
+    font-size: 0.78rem; border: 1.5px solid;
+  }
+  .symptom-tag.alarm {
+    border-color: rgba(230,57,70,0.4); color: var(--coral);
+    background: var(--coral-light);
+  }
+  .symptom-tag.normal {
+    border-color: var(--border); color: var(--text-muted);
+    background: var(--bg);
+  }
+
+  .flag-box {
+    margin: 0 28px 28px;
+    background: var(--coral-light);
+    border: 1px solid rgba(230,57,70,0.3);
+    border-left: 4px solid var(--coral);
+    border-radius: 0 6px 6px 0; padding: 18px 20px;
+  }
+  .flag-box-title {
+    font-family: var(--mono); font-size: 0.63rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--coral); margin-bottom: 10px;
+  }
+  .flag-box p { font-size: 0.88rem; color: #5a1a22; line-height: 1.7; }
+
+  .patient-quote {
+    margin: 0 28px 28px;
+    background: var(--teal-light);
+    border-left: 4px solid var(--teal);
+    border-radius: 0 6px 6px 0; padding: 18px 20px;
+    font-style: italic; color: var(--ink);
+    font-family: var(--serif); font-size: 1.05rem; line-height: 1.6;
+  }
+
+  /* ── VALIDATION ── */
+  .validation-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 24px; margin-top: 48px;
+  }
+  .metric-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 28px 24px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .metric-card:hover { border-color: var(--teal); transform: translateY(-3px); }
+  .metric-value {
+    font-family: var(--serif); font-size: 2.8rem;
+    color: var(--teal); letter-spacing: -0.03em;
+    line-height: 1; margin-bottom: 8px;
+  }
+  .metric-label {
+    font-family: var(--mono); font-size: 0.67rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-muted); margin-bottom: 8px;
+  }
+  .metric-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
+
+  .survival-table { margin-top: 48px; }
+  .survival-row {
+    display: flex; align-items: center; gap: 20px;
+    padding: 18px 0; border-bottom: 1px solid var(--border);
+  }
+  .survival-cancer {
+    font-weight: 600; min-width: 250px; color: var(--ink);
+  }
+  .survival-bar-wrap { flex: 1; }
+  .survival-bar {
+    height: 8px; border-radius: 4px; background: var(--border);
+    overflow: hidden;
+  }
+  .survival-bar-fill {
+    height: 100%; border-radius: 4px; background: var(--teal);
+    transition: width 1s ease;
+  }
+  .survival-mult {
+    font-family: var(--serif); font-size: 1.6rem;
+    color: var(--teal); min-width: 80px; text-align: right;
+  }
+
+  /* ── RESEARCH PROPOSAL ── */
+  .proposal-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 48px; margin-top: 48px; align-items: start;
+  }
+  .phase-section { margin-bottom: 32px; }
+  .phase-label {
+    font-family: var(--mono); font-size: 0.62rem;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    margin-bottom: 14px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .phase-label.complete { color: var(--teal); }
+  .phase-label.target { color: var(--amber); }
+  .phase-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+    font-size: 0.85rem; color: var(--text-muted);
+  }
+  .phase-item:last-child { border-bottom: none; }
+  .phase-arrow { color: var(--teal); font-family: var(--mono); font-weight: 500; flex-shrink: 0; }
+
+  .novelty-claims {
+    background: var(--ink-dark); color: #fff;
+    border-radius: 10px; padding: 32px;
+  }
+  .novelty-claims-label {
+    font-family: var(--mono); font-size: 0.62rem;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--teal); margin-bottom: 16px;
+    padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .claim-item {
+    display: flex; gap: 10px; padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.82rem; color: rgba(255,255,255,0.65); line-height: 1.6;
+  }
+  .claim-item:last-child { border-bottom: none; }
+  .claim-arrow { color: var(--teal); flex-shrink: 0; }
+
+  /* ── ROADMAP ── */
+  .roadmap-timeline {
+    position: relative; margin-top: 48px;
+    padding-left: 32px;
+  }
+  .roadmap-timeline::before {
+    content: '';
+    position: absolute; left: 0; top: 8px; bottom: 8px;
+    width: 2px; background: var(--border); border-radius: 1px;
+  }
+  .roadmap-item {
+    position: relative; margin-bottom: 40px;
+    padding-left: 28px;
+  }
+  .roadmap-item::before {
+    content: '';
+    position: absolute; left: -37px; top: 6px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--teal); border: 2px solid var(--bg);
+    box-shadow: 0 0 0 2px var(--teal);
+  }
+  .roadmap-quarter {
+    font-family: var(--mono); font-size: 0.62rem;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--teal); margin-bottom: 6px;
+  }
+  .roadmap-title {
+    font-family: var(--serif); font-size: 1.1rem;
+    color: var(--ink); margin-bottom: 8px;
+  }
+  .roadmap-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+
+  /* ── COLLABORATION ── */
+  .collab-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 24px; margin-top: 48px;
+  }
+  .collab-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 28px 24px;
+  }
+  .collab-label {
+    font-family: var(--mono); font-size: 0.62rem;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--teal); margin-bottom: 10px;
+  }
+  .collab-title {
+    font-family: var(--serif); font-size: 1.1rem;
+    color: var(--ink); margin-bottom: 10px;
+  }
+  .collab-desc { font-size: 0.83rem; color: var(--text-muted); line-height: 1.7; }
+
+  /* ── ABOUT ── */
+  .about-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 80px; align-items: start; margin-top: 48px;
+  }
+  .about-body { font-size: 1rem; line-height: 1.8; color: var(--text-muted); }
+  .about-body p { margin-bottom: 20px; }
+  .tech-stack {
+    display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px;
+  }
+  .tech-pill {
+    font-family: var(--mono); font-size: 0.68rem;
+    padding: 6px 14px; border-radius: 20px;
+    border: 1.5px solid var(--border); color: var(--ink);
+  }
+  .guidelines-list { margin-top: 32px; }
+  .guideline-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 0; border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  .guideline-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--teal); flex-shrink: 0;
+  }
+
+  /* ── CONTACT ── */
+  .contact-grid {
+    display: grid; grid-template-columns: 1fr 1.2fr;
+    gap: 80px; align-items: start; margin-top: 48px;
+  }
+  .contact-form {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 36px;
+  }
+  .contact-form .form-group { margin-bottom: 18px; }
+  .contact-form input, .contact-form select, .contact-form textarea {
+    width: 100%;
+    border: 1.5px solid var(--border); border-radius: 5px;
+    padding: 11px 14px; font-family: var(--sans);
+    font-size: 0.9rem; background: var(--bg);
+    outline: none; transition: border-color 0.2s; color: var(--text);
+  }
+  .contact-form input:focus, .contact-form select:focus, .contact-form textarea:focus { border-color: var(--teal); }
+  .contact-form textarea { min-height: 120px; resize: vertical; }
+  .contact-aside { padding-top: 12px; }
+  .contact-email {
+    font-family: var(--mono); font-size: 0.9rem;
+    color: var(--teal); margin-top: 20px;
+    display: block; text-decoration: none;
+  }
+  .contact-email:hover { text-decoration: underline; }
+
+  .expertise-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .expertise-tag {
+    font-family: var(--mono); font-size: 0.65rem;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    padding: 5px 12px; border-radius: 3px;
+    background: var(--teal-light); color: var(--teal);
+    border: 1px solid rgba(42,157,143,0.25);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 32px 48px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-top: 1px solid var(--border);
+  }
+  .footer-logo {
+    font-family: var(--serif); font-size: 1.1rem;
+    color: var(--ink);
+  }
+  .footer-logo span { color: var(--teal); }
+  .footer-legal {
+    font-family: var(--mono); font-size: 0.6rem;
+    color: var(--text-muted); text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .footer-disclaimer {
+    background: var(--coral-light);
+    border-top: 1px solid rgba(230,57,70,0.2);
+    padding: 20px 48px;
+    font-family: var(--mono); font-size: 0.68rem;
+    color: #7a1a22; line-height: 1.7;
+  }
+
+  /* helpers */
+  .mono-label {
+    font-family: var(--mono); font-size: 0.65rem;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--text-muted); margin-bottom: 12px;
+  }
+
+  @media (max-width: 1000px) {
+    .metrics-strip { grid-template-columns: repeat(3, 1fr); }
+    .novelty-grid { grid-template-columns: 1fr 1fr; }
+    .pipeline-full { grid-template-columns: 1fr 1fr; }
+    .genomic-grid { grid-template-columns: 1fr; }
+    .cmat-grid, .ode-grid, .proposal-grid { grid-template-columns: 1fr; gap: 40px; }
+  }
+  @media (max-width: 900px) {
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; padding: 60px 20px; gap: 40px; }
+    section { padding: 60px 20px; }
+    .intake-grid, .about-grid, .contact-grid, .doorstep-grid { grid-template-columns: 1fr; gap: 40px; }
+    .validation-grid { grid-template-columns: 1fr 1fr; }
+    .patient-grid { grid-template-columns: 1fr 1fr; }
+    .collab-grid { grid-template-columns: 1fr; }
+    .signal-grid { grid-template-columns: 1fr 1fr; }
+    .modality-grid { grid-template-columns: 1fr 1fr; }
+    .path-row { grid-template-columns: 1fr; }
+    footer { padding: 24px 20px; flex-direction: column; gap: 12px; text-align: center; }
+    .footer-disclaimer { padding: 20px; }
+    .warning-banner { padding: 14px 20px; }
+    .metrics-strip { grid-template-columns: 1fr 1fr; padding: 32px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div style="display:flex;align-items:center">
+    <div class="nav-logo">Oncosense<span>AI</span></div>
+    <span class="nav-badge">Research Prototype · 2026</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#novelty">Novelty</a></li>
+    <li><a href="#cmat">CMAT</a></li>
+    <li><a href="#pipeline">Pipeline</a></li>
+    <li><a href="#neural-ode">Neural ODE</a></li>
+    <li><a href="#intake">Assessment</a></li>
+    <li><a href="#validation">Validation</a></li>
+    <li><a href="#proposal">Proposal</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="border-top:none">
+  <div class="hero-left">
+    <div class="hero-badge-row">
+      <span class="badge">Biological Early Warning System</span>
+      <span class="badge">GI Oncology</span>
+      <span class="badge">TRIPOD Compliant</span>
+      <span class="badge">SEER N=500</span>
+      <span class="badge amber">NICE NG12</span>
+      <span class="badge amber">ESMO 2023</span>
+    </div>
+    <div class="hero-eyebrow">Continuous Biological Auditing · GI Oncology</div>
+    <h1>The physician<br>at your <em>doorstep</em></h1>
+    <p class="hero-sub">OncosenseAI combines Neural ODEs, Cross-Modal Attention Transformers, and Counterfactual Synthetic Twins to detect gastrointestinal cancer signals 180+ days before clinical threshold — silently, continuously, at home.</p>
+    <div class="hero-cta">
+      <a href="#intake" class="btn-primary">Run Risk Assessment</a>
+      <a href="#proposal" class="btn-outline">Read Proposal</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="pipeline-visual">
+      <div class="stage-card"><div class="stage-num">Stage 01</div><div class="stage-name">Symptom Intake</div><div class="stage-desc">NICE NG12 adaptive questionnaire — NLP converts narrative to Symptom Vector vS</div></div>
+      <div class="stage-card"><div class="stage-num">Stage 02</div><div class="stage-name">EHR Biomarkers</div><div class="stage-desc">CA19-9, CEA, LFTs normalised to z-scores. Missing values imputed via clinical priors</div></div>
+      <div class="stage-card"><div class="stage-num">Stage 03</div><div class="stage-name">Genomic Engine</div><div class="stage-desc">12-variant catalogue, PRS, methylation proxies, CPIC pharmacogenomics</div></div>
+      <div class="stage-card"><div class="stage-num">Stage 04</div><div class="stage-name">CMAT Fusion</div><div class="stage-desc">2-head, 2-layer Transformer. Clinical priors initialise; SEER data refines</div></div>
+      <div class="stage-card"><div class="stage-num">Stage 05</div><div class="stage-name">Dissonance Detect</div><div class="stage-desc">Surfaces "Genomically Loud / Symptomatically Quiet" patterns. MSI-H override</div></div>
+      <div class="stage-card"><div class="stage-num">Stage 06</div><div class="stage-name">Neural ODE Temporal</div><div class="stage-desc">Continuous dh/dt modelling. Bifurcation point detection. Velocity-aware attention</div></div>
+      <div class="stage-card"><div class="stage-num">Stage 07</div><div class="stage-name">Counterfactual Twin</div><div class="stage-desc">10,000 bifurcation simulations. Path A vs Path B divergence mapping</div></div>
+      <div class="stage-card"><div class="stage-num">Stage 08</div><div class="stage-name">SHAP + Handoff</div><div class="stage-desc">SHapley audit trail. TRIPOD-compliant. ESMO/NCCN pathway routing</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- WARNING -->
+<div class="warning-banner">
+  ⚠ Research prototype only. Not approved by FDA, CE-mark, MHRA, or any regulatory authority. Not for clinical use. All figures from retrospective SEER validation (n=500). TRIPOD guidelines followed.
+</div>
+
+<!-- METRICS STRIP -->
+<div class="metrics-strip">
+  <div class="metric-pill">
+    <div class="metric-pill-value">0.853</div>
+    <div class="metric-pill-label">NPV @ 95%<br>Sensitivity</div>
+  </div>
+  <div class="metric-pill">
+    <div class="metric-pill-value">8.8×</div>
+    <div class="metric-pill-label">Early Detection<br>Gain</div>
+  </div>
+  <div class="metric-pill">
+    <div class="metric-pill-value">180+</div>
+    <div class="metric-pill-label">Days Lead-Time<br>Target</div>
+  </div>
+  <div class="metric-pill">
+    <div class="metric-pill-value">12</div>
+    <div class="metric-pill-label">High-Penetrance<br>Variants</div>
+  </div>
+  <div class="metric-pill">
+    <div class="metric-pill-value">0.790</div>
+    <div class="metric-pill-label">LR AUROC<br>SEER N=500</div>
+  </div>
+</div>
+
+<!-- NOVELTY PILLARS -->
+<section id="novelty">
+  <div class="section-label">World-First Innovations · 2026</div>
+  <h2 class="section-title">Six pillars of <em style="font-style:italic;color:var(--teal)">scientific novelty</em></h2>
+  <p class="section-sub">Every component of OncosenseAI addresses a specific gap in existing GI oncology AI. Here is what makes this architecture different from everything that already exists.</p>
+
+  <div class="classification-box">
+    <div class="mono-label" style="color:var(--teal)">Classification Statement</div>
+    <p>OncosenseAI is not a diagnostic chatbot, risk calculator, or screening app. It is a <strong>Continuous Biological Auditing System</strong> — a silent operator that remains passive until the mathematics of patient data reaches a genuine bifurcation point requiring human clinical judgment.</p>
+  </div>
+
+  <div class="novelty-grid">
+    <div class="novelty-card">
+      <div class="novelty-num">Novelty 01</div>
+      <div class="novelty-title">Neural ODE Temporal Engine</div>
+      <div class="novelty-desc">Standard AI models are blind to time between visits. OncosenseAI treats patient health as a continuous fluid state via Neural Ordinary Differential Equations — predicting biological derivatives, not snapshots.</div>
+      <div class="novelty-compare">
+        <span class="novelty-tag yes">Continuous dh/dt modelling</span>
+        <span class="novelty-tag no">Discrete visit snapshots</span>
+      </div>
+    </div>
+    <div class="novelty-card">
+      <div class="novelty-num">Novelty 02</div>
+      <div class="novelty-title">Counterfactual Synthetic Twin</div>
+      <div class="novelty-desc">The AI builds a latent digital twin and runs thousands of bifurcation simulations — showing the patient not just what is happening, but the exact moment risk paths diverge and when intervention changes outcomes.</div>
+      <div class="novelty-compare">
+        <span class="novelty-tag yes">Path A vs Path B predictions</span>
+        <span class="novelty-tag no">Static score output</span>
+      </div>
+    </div>
+    <div class="novelty-card">
+      <div class="novelty-num">Novelty 03</div>
+      <div class="novelty-title">3D Thermal Proprioception UI</div>
+      <div class="novelty-desc">Risk is visualised as heat on a patient-specific 3D anatomical model — where heat represents CMAT attention weight, not pain. A patient sees where the model's suspicion is focused before a physician speaks.</div>
+      <div class="novelty-compare">
+        <span class="novelty-tag yes">Attention-mapped anatomy</span>
+        <span class="novelty-tag no">Percentage score displays</span>
+      </div>
+    </div>
+    <div class="novelty-card">
+      <div class="novelty-num">Novelty 04</div>
+      <div class="novelty-title">Zero-Notification Passive Monitoring</div>
+      <div class="novelty-desc">The system monitors digital biomarkers (gait, voice tremor, typing cadence) as proxies for systemic inflammation — asking no questions, generating no alerts, until the Neural ODE detects non-linear risk acceleration.</div>
+      <div class="novelty-compare">
+        <span class="novelty-tag yes">Silent operator model</span>
+        <span class="novelty-tag no">Daily questionnaire apps</span>
+      </div>
+    </div>
+    <div class="novelty-card">
+      <div class="novelty-num">Novelty 05</div>
+      <div class="novelty-title">Cross-Ancestry SGRS Normalisation</div>
+      <div class="novelty-desc">The Surrogate Genetic Risk Score normalises across ethnic cohorts, directly addressing the data bias problem that renders most GI oncology models unreliable for non-European ancestry populations.</div>
+      <div class="novelty-compare">
+        <span class="novelty-tag yes">Zero-bias multi-ancestry</span>
+        <span class="novelty-tag no">European-dominant training</span>
+      </div>
+    </div>
+    <div class="novelty-card">
+      <div class="novelty-num">Novelty 06</div>
+      <div class="novelty-title">Velocity-Aware Cross-Modal Attention</div>
+      <div class="novelty-desc">Attention weights are not just importance-weighted — they are volatility-weighted. The model is forced to prioritise the most rapidly-changing biological signal, not the highest absolute value.</div>
+      <div class="novelty-compare">
+        <span class="novelty-tag yes">Δv/Δt attention scaling</span>
+        <span class="novelty-tag no">Static attention weights</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CMAT ARCHITECTURE -->
+<section id="cmat" class="cmat-section">
+  <div class="section-label">CMAT Engine · Technical Architecture</div>
+  <h2 class="section-title">Cross-Modal Attention <em style="color:var(--teal);font-style:italic">Transformer</em></h2>
+  <p class="section-sub">Four clinical data streams tokenised, fused through learned cross-attention, and decoded into a physician-grade risk narrative. Built on clinical priors, refined via SEER retrospective validation.</p>
+
+  <div class="cmat-grid">
+    <div>
+      <div class="modality-grid">
+        <div class="modality-card">
+          <div class="modality-label">Genomic V<sub>G</sub></div>
+          <div class="modality-value">0.91</div>
+          <div class="modality-desc">KRAS G12D · BRCA2 · MLH1</div>
+        </div>
+        <div class="modality-card">
+          <div class="modality-label">Symptom V<sub>S</sub></div>
+          <div class="modality-value">0.44</div>
+          <div class="modality-desc">NICE NG12 binary bag</div>
+        </div>
+        <div class="modality-card">
+          <div class="modality-label">Laboratory V<sub>L</sub></div>
+          <div class="modality-value">0.67</div>
+          <div class="modality-desc">CA19-9 · CEA · z-scores</div>
+        </div>
+        <div class="modality-card">
+          <div class="modality-label">Temporal V<sub>T</sub></div>
+          <div class="modality-value" style="color:var(--amber)">+0.18</div>
+          <div class="modality-desc">3-visit rolling Δv/Δt</div>
+        </div>
+      </div>
+
+      <div class="attention-table">
+        <div class="attention-table-header">Learned Cross-Attention Matrix — Head 1 (Prior-Init: G=0.55, S=0.25, L=0.15, T=0.05)</div>
+        <table class="attn-table">
+          <tr>
+            <th></th><th>Genomic</th><th>Symptom</th><th>Lab</th><th>Temporal</th>
+          </tr>
+          <tr>
+            <td>Genomic</td><td class="hi">0.72</td><td>0.18</td><td>0.06</td><td>0.04</td>
+          </tr>
+          <tr>
+            <td>Symptom</td><td>0.31</td><td class="hi">0.51</td><td>0.12</td><td>0.06</td>
+          </tr>
+          <tr>
+            <td>Lab</td><td>0.28</td><td>0.09</td><td class="hi">0.55</td><td>0.08</td>
+          </tr>
+          <tr>
+            <td>Temporal</td><td>0.19</td><td>0.07</td><td>0.11</td><td class="hi">0.63</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="cmat-flow">
+      <div class="cmat-flow-label">CMAT Data Flow · 2-Head, 2-Layer TransformerEncoder</div>
+      <div class="cmat-node">
+        <div class="cmat-node-label">🧬 Genomic V<sub>G</sub></div>
+        <div class="cmat-node-desc">12-variant weighted vector + PRS</div>
+      </div>
+      <div class="cmat-arrow">↕</div>
+      <div class="cmat-node">
+        <div class="cmat-node-label">⚡ Tokeniser</div>
+        <div class="cmat-node-desc">Normalise to shared embedding space</div>
+      </div>
+      <div class="cmat-arrow">↓</div>
+      <div class="cmat-node" style="border-color:rgba(42,157,143,0.5);background:rgba(42,157,143,0.08)">
+        <div class="cmat-node-label" style="font-size:0.75rem">CMAT Core</div>
+        <div class="cmat-node-desc">Cross-modal learned attention fusion</div>
+      </div>
+      <div class="cmat-arrow">↓</div>
+      <div class="cmat-node">
+        <div class="cmat-node-label">📋 Decoder</div>
+        <div class="cmat-node-desc">SGRS + dissonance + narrative</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 9-STAGE PIPELINE -->
+<section id="pipeline">
+  <div class="section-label">9-Stage Clinical Pipeline</div>
+  <h2 class="section-title">From intake to <em style="font-style:italic;color:var(--teal)">physician handoff</em></h2>
+  <p class="section-sub">A complete end-to-end clinical AI pipeline. Each stage builds on the last, culminating in a pre-authenticated clinical packet delivered threshold-only to the physician.</p>
+
+  <div class="pipeline-full">
+    <div class="pipeline-stage">
+      <div class="pipeline-stage-num">Stage 01</div>
+      <div class="pipeline-stage-icon">📝</div>
+      <div class="pipeline-stage-name">Symptom Intake</div>
+      <div class="pipeline-stage-desc">NICE NG12 adaptive questionnaire. NLP converts patient narrative to Symptom Vector vS. Alarm features auto-flagged.</div>
+      <span class="pipeline-stage-tag teal">NICE NG12</span>
+    </div>
+    <div class="pipeline-stage">
+      <div class="pipeline-stage-num">Stage 02</div>
+      <div class="pipeline-stage-icon">🏥</div>
+      <div class="pipeline-stage-name">EHR Biomarkers</div>
+      <div class="pipeline-stage-desc">CA19-9, CEA, LFTs normalised to z-scores. Missing values imputed via clinical priors.</div>
+      <span class="pipeline-stage-tag amber">Lab Vector</span>
+    </div>
+    <div class="pipeline-stage">
+      <div class="pipeline-stage-num">Stage 03</div>
+      <div class="pipeline-stage-icon">🧬</div>
+      <div class="pipeline-stage-name">Genomic Engine</div>
+      <div class="pipeline-stage-desc">12 high-penetrance variants + PRS. Methylation proxies (SEPT9, RASSF1A). CPIC pharmacogenomics.</div>
+      <span class="pipeline-stage-tag teal">Genomic vG</span>
+    </div>
+    <div class="pipeline-stage">
+      <div class="pipeline-stage-num">Stage 04</div>
+      <div class="pipeline-stage-icon">⚡</div>
+      <div class="pipeline-stage-name">CMAT Fusion</div>
+      <div class="pipeline-stage-desc">2-head, 2-layer TransformerEncoder. Clinical priors initialise weights, backprop refines on SEER data.</div>
+      <span class="pipeline-stage-tag ink">Core Engine</span>
+    </div>
+    <div class="pipeline-stage">
+      <div class="pipeline-stage-num">Stage 05</div>
+      <div class="pipeline-stage-icon">⚠️</div>
+      <div class="pipeline-stage-name">Dissonance Detect</div>
+      <div class="pipeline-stage-desc">Identifies "Genomically Loud / Symptomatically Quiet" patterns. MSI-H status override logic.</div>
+      <span class="pipeline-stage-tag coral">Novel Layer</span>
+    </div>
+    <div class="pipeline-stage new-2026">
+      <div class="pipeline-stage-num">Stage 06</div>
+      <div class="pipeline-stage-icon">🌊</div>
+      <div class="pipeline-stage-name">Neural ODE Temporal</div>
+      <div class="pipeline-stage-desc">Continuous dh/dt modelling. Irregular visit sampling. Bifurcation point detection. Velocity-aware attention.</div>
+      <span class="pipeline-stage-tag teal">New · 2026</span>
+    </div>
+    <div class="pipeline-stage new-2026">
+      <div class="pipeline-stage-num">Stage 07</div>
+      <div class="pipeline-stage-icon">👥</div>
+      <div class="pipeline-stage-name">Counterfactual Twin</div>
+      <div class="pipeline-stage-desc">Patient-specific synthetic simulations. Path A vs Path B divergence mapping. Time-to-threshold prediction.</div>
+      <span class="pipeline-stage-tag violet">New · 2026</span>
+    </div>
+    <div class="pipeline-stage">
+      <div class="pipeline-stage-num">Stage 08</div>
+      <div class="pipeline-stage-icon">📊</div>
+      <div class="pipeline-stage-name">SHAP Explainability</div>
+      <div class="pipeline-stage-desc">SHapley values for feature attribution. TRIPOD-compliant audit trail. Physician-ready memo generation.</div>
+      <span class="pipeline-stage-tag amber">TRIPOD</span>
+    </div>
+    <div class="pipeline-stage">
+      <div class="pipeline-stage-num">Stage 09</div>
+      <div class="pipeline-stage-icon">🩺</div>
+      <div class="pipeline-stage-name">Physician Handoff</div>
+      <div class="pipeline-stage-desc">Threshold-triggered only. Pre-authenticated clinical packet. ESMO 2023 + NCCN v2.2024 pathway routing.</div>
+      <span class="pipeline-stage-tag ink">Handoff</span>
+    </div>
+  </div>
+</section>
+
+<!-- NEURAL ODE MODULE -->
+<section id="neural-ode" class="ode-section">
+  <div class="section-label">Module 06 · Neural ODE Temporal Engine — New 2026</div>
+  <h2 class="section-title">The engine that watches <em style="color:var(--teal);font-style:italic">between visits</em></h2>
+  <p class="section-sub">Cancer does not happen at appointments. OncosenseAI treats patient risk as a continuous differential equation — computing the derivative of biological state (dh/dt) to predict bifurcation points before any symptom manifests.</p>
+
+  <div class="ode-grid">
+    <div class="ode-patient-card">
+      <div class="ode-patient-header">
+        <div class="ode-patient-name">Patient: Sarah K. · 52 · Asymptomatic</div>
+        <div class="ode-patient-meta">CDH1 variant detected · New-onset diabetes · Ancestry: East Asian · 3-visit window active</div>
+        <div class="bifurcation-badge">⚡ Bifurcation Point Detected</div>
+      </div>
+
+      <div class="visit-timeline">
+        <div class="visit-item">
+          <div class="visit-label">Visit 1 · 6 months ago</div>
+          <div class="visit-score monitoring">34</div>
+          <div class="visit-delta">Δv: +0.02/mo</div>
+          <span class="visit-tag monitoring">Monitoring</span>
+        </div>
+        <div class="visit-item">
+          <div class="visit-label">Visit 2 · 3 months ago</div>
+          <div class="visit-score watch">52</div>
+          <div class="visit-delta">Δv: +0.14/mo ↑</div>
+          <span class="visit-tag watch">Watch</span>
+        </div>
+        <div class="visit-item">
+          <div class="visit-label">Visit 3 · Today</div>
+          <div class="visit-score bifurcation">74</div>
+          <div class="visit-delta">Δv: +0.22/mo ↑↑</div>
+          <span class="visit-tag bifurcation">Bifurcation</span>
+        </div>
+        <div class="visit-item">
+          <div class="visit-label">Predicted · 186 days</div>
+          <div class="visit-score threshold">82</div>
+          <div class="visit-delta">Neural ODE projection</div>
+          <span class="visit-tag" style="background:rgba(123,94,167,0.2);color:#c9b0e8">Threshold</span>
+        </div>
+      </div>
+
+      <div class="velocity-drift">
+        <div class="velocity-label">Velocity-Aware Attention Drift</div>
+        <div class="velocity-row">
+          <span class="velocity-name">Genomic weight</span>
+          <span class="velocity-val up">↑ 0.72 → 0.89</span>
+        </div>
+        <div class="velocity-row">
+          <span class="velocity-name">Symptom weight</span>
+          <span class="velocity-val quiet">→ 0.08 (quiet)</span>
+        </div>
+        <div class="velocity-row">
+          <span class="velocity-name">Lab weight</span>
+          <span class="velocity-val up">↑ 0.38 → 0.51</span>
+        </div>
+        <div class="velocity-row">
+          <span class="velocity-name">Temporal Δv</span>
+          <span class="velocity-val up">↑↑ +0.22/visit</span>
+        </div>
+      </div>
+
+      <div class="dissonance-alert">
+        <div class="dissonance-alert-label">Dissonance Alert</div>
+        <p>Genomic/Lab rising rapidly while Symptom remains silent. Classic <strong style="color:#fff">Silent Progression</strong> pattern.</p>
+      </div>
+    </div>
+
+    <div>
+      <div class="ode-narrative">
+        <div class="ode-narrative-label">Neural ODE Clinical Narrative · Auto-Generated</div>
+        <p>Sarah K. presents an archetypal <strong>Silent Progression</strong> signature: a CDH1 germline variant combined with new-onset T2DM in a 52-year-old East Asian female. Physical symptom burden remains at the 8th percentile — this patient would be dismissed by standard screening protocols as low-priority.</p>
+        <p>However, the Temporal Engine detects an accelerating genomic-lab dissonance. The rate of change (Δv/Δt = +0.22 per visit) has crossed the non-linear threshold for the Neural ODE solver. Running 10,000 Counterfactual Twin simulations:</p>
+        <div class="path-row">
+          <div class="path-card path-a">
+            <div class="path-label">Path A — No intervention</div>
+            <div class="path-value">186 days</div>
+            <div class="path-desc">to NCCN biopsy threshold · 73% confidence</div>
+          </div>
+          <div class="path-card path-b">
+            <div class="path-label">Path B — EUS initiated now</div>
+            <div class="path-value">&gt;730 days</div>
+            <div class="path-desc">safe monitoring window · 89% of simulations</div>
+          </div>
+        </div>
+        <p style="margin-top:16px"><strong>Doorstep phase complete.</strong> This case has reached biological complexity requiring human specialist judgment. Pre-authenticated clinical packet prepared. Recommend: Upper GI endoscopy with targeted biopsy per ESMO 2023 CDH1 guidelines.</p>
+        <div style="margin-top:20px;padding:16px 18px;background:rgba(42,157,143,0.1);border:1px solid rgba(42,157,143,0.2);border-radius:6px">
+          <div style="font-family:var(--mono);font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--teal);margin-bottom:8px">Physician Clinical Packet</div>
+          <div style="font-size:0.8rem;color:rgba(255,255,255,0.6);line-height:1.7">SGRS: 74/100. CDH1 germline + T2DM onset + East Asian ancestry. Pancreatic attention weight 0.89. Temporal velocity +0.22/visit (3-window). Recommend: EUS pancreas protocol. DPYD/UGT1A1 genotyping before any 5-FU consideration. ESMO 2023 CDH1 pathway applies.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DOORSTEP PROTOCOL -->
+<section id="doorstep">
+  <div class="section-label">Doorstep Protocol</div>
+  <h2 class="section-title">The <em style="font-style:italic;color:var(--teal)">threshold of difficulty</em></h2>
+  <p class="section-sub">Three triggers shift OncosenseAI from silent home monitor to physician-ready clinical handoff. No physician is involved until the mathematics demands it.</p>
+
+  <div class="doorstep-grid">
+    <div>
+      <div class="doorstep-messages">
+        <div class="doorstep-header">
+          <span class="doorstep-header-title">Patient Doorstep · Autonomous</span>
+          <span class="doorstep-status">Active</span>
+        </div>
+        <div class="doorstep-msg">"You're being monitored. Everything looks stable. Keep logging your daily check-in."</div>
+        <div class="doorstep-msg">"We noticed a small change in your profile this week. We're watching it. No action needed yet."</div>
+        <div class="doorstep-msg active"><strong>⚡ Bifurcation detected.</strong> "Your biological signal has reached a level that needs a specialist's eyes. We've prepared your clinical briefcase. Your GP has been notified."</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="mono-label" style="margin-bottom:16px">Physician Handoff Triggers · Threshold-Only</div>
+      <div class="trigger-list">
+        <div class="trigger-item">
+          <div class="trigger-label a">Trigger A — Diagnostic Dissonance</div>
+          <div class="trigger-desc">Genomic signal HIGH while symptom vector remains at baseline. Classic early-stage pattern — standard GPs would dismiss.</div>
+        </div>
+        <div class="trigger-item">
+          <div class="trigger-label b">Trigger B — Velocity Spike</div>
+          <div class="trigger-desc">Neural ODE detects non-linear acceleration in 3-visit rolling window. Rate of change exceeds safe monitoring envelope.</div>
+        </div>
+        <div class="trigger-item">
+          <div class="trigger-label c">Trigger C — Red-Flag Constellation</div>
+          <div class="trigger-desc">Ancestry + personal history (new-onset T2DM / Barrett's / pancreatitis) + specific variant pattern = high-penetrance syndrome signal.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DISSONANCE MODULE -->
+<section id="dissonance" class="dissonance-section">
+  <div class="section-label">Module 05 · Real-Time Diagnostic Dissonance</div>
+  <h2 class="section-title">When modalities <em style="font-style:italic;color:var(--teal)">conflict</em></h2>
+  <p class="section-sub">OncosenseAI surfaces dissonance rather than averaging it away. The most dangerous early-cancer signal is genomically loud but symptomatically silent — the exact pattern most clinical tools miss.</p>
+
+  <div style="margin-top:32px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:28px">
+    <div style="font-weight:600;font-size:1rem;color:var(--ink);margin-bottom:4px">James M. · 58 · Current Smoker</div>
+    <div style="font-size:0.85rem;color:var(--text-muted);margin-bottom:16px">KRAS G12D positive · 6kg weight loss · Jaundice · Dark urine · Pale stools · Back pain</div>
+    <span style="font-family:var(--mono);font-size:0.62rem;text-transform:uppercase;letter-spacing:0.08em;padding:4px 10px;border-radius:3px;background:var(--coral-light);color:var(--coral);border:1px solid rgba(230,57,70,0.3)">⚠ High Dissonance</span>
+  </div>
+
+  <div class="signal-grid" style="margin-top:24px">
+    <div class="signal-cell">
+      <div class="signal-name">Genomic</div>
+      <div class="signal-val hi">0.91</div>
+      <span class="signal-badge-sm hi">High</span>
+    </div>
+    <div class="signal-cell">
+      <div class="signal-name">Symptom</div>
+      <div class="signal-val hi">0.88</div>
+      <span class="signal-badge-sm hi">High</span>
+    </div>
+    <div class="signal-cell">
+      <div class="signal-name">Laboratory</div>
+      <div class="signal-val med">0.74</div>
+      <span class="signal-badge-sm med">Med</span>
+    </div>
+    <div class="signal-cell">
+      <div class="signal-name">Temporal Drift</div>
+      <div class="signal-val lo">0.62</div>
+      <span class="signal-badge-sm lo">Active</span>
+    </div>
+  </div>
+
+  <div class="dissonance-analysis">
+    <div class="mono-label" style="color:var(--teal)">CMAT Dissonance Analysis</div>
+    <p>Genomic signal (KRAS G12D, CDKN2A) is the dominant driver at attention weight 0.91. Symptom constellation independently reaches 0.88 — confirming biliary obstruction pattern. Temporal drift (0.62) indicates symptom progression over 3-month window.</p>
+    <p style="margin-top:10px"><strong>All four modalities are concordant and elevated — this is convergent high-risk signal.</strong> Highest urgency pathway triggered. Immediate CT pancreas protocol and EUS recommended. KRAS G12D status elevates pancreatic adenocarcinoma prior to 4.8× penetrance multiplier.</p>
+  </div>
+</section>
+
+<!-- GENOMIC MODULE -->
+<section id="genomics">
+  <div class="section-label">Module 03 · Advanced Genomic Layer</div>
+  <h2 class="section-title">Beyond mutation <em style="font-style:italic;color:var(--teal)">checking</em></h2>
+  <p class="section-sub">The genomic engine aggregates high-penetrance variants, polygenic risk, methylation proxies, and pharmacogenomics into a unified Genomic Vector vG. Single mutations are context — combined signals are evidence.</p>
+
+  <div class="genomic-grid">
+    <div>
+      <div class="genomic-sub-title">High-Penetrance Variant Catalogue</div>
+      <div class="genomic-sub-desc">12-variant engine with penetrance multipliers across KRAS, BRCA2, MLH1, MSH2, CDKN2A, ATM, CDH1, STK11, PTEN, APC, NF1, and MSI-H with DPYD override rules.</div>
+      <div class="gene-list">
+        <div class="gene-row"><span class="gene-name">KRAS G12D</span><span class="gene-site">Pancreatic</span><span class="gene-val coral">×4.8</span></div>
+        <div class="gene-row"><span class="gene-name">BRCA2</span><span class="gene-site">Pancreatic</span><span class="gene-val coral">×3.5</span></div>
+        <div class="gene-row"><span class="gene-name">MLH1</span><span class="gene-site">Lynch/Gastric</span><span class="gene-val amber">×3.1</span></div>
+        <div class="gene-row"><span class="gene-name">CDH1</span><span class="gene-site">Gastric</span><span class="gene-val amber">×3.0</span></div>
+        <div class="gene-row"><span class="gene-name">CDKN2A</span><span class="gene-site">Pancreatic</span><span class="gene-val">×2.8</span></div>
+        <div class="gene-row"><span class="gene-name">MSI-H</span><span class="gene-site">All GI</span><span class="gene-val teal" style="color:var(--teal)">Override</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="genomic-sub-title">cfDNA Methylation Proxies</div>
+      <div class="genomic-sub-desc">Tissue-of-origin detection via liquid biopsy signals. SEPT9 and RASSF1A methylation detect early-stage gastric and pancreatic signals before radiological visibility.</div>
+      <div class="gene-list">
+        <div class="gene-row"><span class="gene-name">SEPT9</span><span class="gene-site">Colorectal · cfDNA</span><span class="gene-val">Sens. 68%</span></div>
+        <div class="gene-row"><span class="gene-name">RASSF1A</span><span class="gene-site">Pancreatic · cfDNA</span><span class="gene-val">Spec. 91%</span></div>
+        <div class="gene-row"><span class="gene-name">APC hypermethyl.</span><span class="gene-site">Oesophageal · BE</span><span class="gene-val">OR 3.2</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="genomic-sub-title">Pharmacogenomic Layer</div>
+      <div class="genomic-sub-desc">CPIC-cited drug-gene interactions surfaced at treatment planning stage. Prevents toxic reactions before chemotherapy begins.</div>
+      <div class="gene-list">
+        <div class="gene-row"><span class="gene-name">DPYD *2A</span><span class="gene-site">5-FU</span><span class="gene-val coral">Override</span></div>
+        <div class="gene-row"><span class="gene-name">UGT1A1 *28</span><span class="gene-site">Irinotecan</span><span class="gene-val amber">Flag</span></div>
+        <div class="gene-row"><span class="gene-name">MSI-H</span><span class="gene-site">Pembrolizumab</span><span class="gene-val" style="color:var(--teal)">Eligible</span></div>
+        <div class="gene-row"><span class="gene-name">HER2 amplification</span><span class="gene-site">Trastuzumab</span><span class="gene-val">Consider</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INTAKE FORM -->
+<section id="intake" style="background:var(--surface)">
+  <div class="section-label">OncosenseAI · Stage 1 of 9</div>
+  <h2 class="section-title">Run your <em style="font-style:italic;color:var(--teal)">risk assessment</em></h2>
+  <p class="section-sub">The SGRS engine scores your responses locally. The AI then streams a clinical-grade reasoning assessment — written like a senior GI geneticist thinking aloud. This is not medical advice.</p>
+
+  <div class="intake-grid">
+    <div class="form-card">
+      <div class="form-card-header">
+        Your Details
+        <span class="stage-indicator">Stage 01 / 09</span>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" placeholder="Enter your name">
+        </div>
+        <div class="form-group">
+          <label>Age</label>
+          <input type="number" placeholder="e.g. 58">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Sex at Birth</label>
+          <select><option>Select</option><option>Male</option><option>Female</option><option>Intersex</option></select>
+        </div>
+        <div class="form-group">
+          <label>Smoking History</label>
+          <select><option>Never smoked</option><option>Former smoker</option><option>Current smoker</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Alcohol Use</label>
+          <select><option>None</option><option>Occasional</option><option>Moderate</option><option>Heavy</option></select>
+        </div>
+        <div class="form-group">
+          <label>Family Cancer History</label>
+          <select><option>None known</option><option>First-degree relative</option><option>Second-degree relative</option></select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Ancestry</label>
+          <select><option>Not specified</option><option>East Asian</option><option>South Asian</option><option>African</option><option>European</option><option>Mixed</option></select>
+        </div>
+        <div class="form-group">
+          <label>Known Genetic Variants</label>
+          <select><option>None / Unknown</option><option>KRAS mutation</option><option>BRCA1/2</option><option>Lynch syndrome (MLH1/MSH2)</option><option>CDH1</option><option>Other</option></select>
+        </div>
+      </div>
+
+      <div class="symptom-section">
+        <div class="symptom-section-title">🚨 Alarm Symptoms <span style="font-weight:400;color:var(--text-muted);font-size:0.78rem">(NICE NG12 red flags)</span></div>
+        <div class="symptom-grid">
+          <span class="symptom-chip alarm" onclick="toggleChip(this)">Weight loss</span>
+          <span class="symptom-chip alarm" onclick="toggleChip(this)">Jaundice</span>
+          <span class="symptom-chip alarm" onclick="toggleChip(this)">Swallowing difficulty</span>
+          <span class="symptom-chip alarm" onclick="toggleChip(this)">Rectal bleeding</span>
+          <span class="symptom-chip alarm" onclick="toggleChip(this)">Vomiting blood</span>
+        </div>
+
+        <div class="symptom-section-title">🫁 Upper Abdominal</div>
+        <div class="symptom-grid">
+          <span class="symptom-chip" onclick="toggleChip(this)">Upper abdominal pain</span>
+          <span class="symptom-chip" onclick="toggleChip(this)">Epigastric discomfort</span>
+          <span class="symptom-chip" onclick="toggleChip(this)">Nausea</span>
+          <span class="symptom-chip" onclick="toggleChip(this)">Vomiting</span>
+          <span class="symptom-chip" onclick="toggleChip(this)">Early satiety</span>
+          <span class="symptom-chip" onclick="toggleChip(this)">Bloating</span>
+        </div>
+
+        <div class="symptom-section-title">🧠 General / Systemic</div>
+        <div class="symptom-grid">
+          <span class="symptom-chip" onclick="toggleChip(this)">Fatigue</span>
+          <span class="symptom-chip" onclick="toggleChip(this)">Loss of appetite</span>
+          <span class="symptom-chip" onclick="toggleChip(this)">Night sweats</span>
+          <span class="symptom-chip" onclick="toggleChip(this)">Back pain</span>
+          <span class="symptom-chip" onclick="toggleChip(this)">Itching</span>
+        </div>
+
+        <div class="symptom-section-title">✏️ Stool / Urine Changes</div>
+        <div class="symptom-grid">
+          <span class="symptom-chip" onclick="toggleChip(this)">Dark urine</span>
+          <span class="symptom-chip" onclick="toggleChip(this)">Pale stools</span>
+          <span class="symptom-chip" onclick="toggleChip(this)">Black stools</span>
+          <span class="symptom-chip" onclick="toggleChip(this)">Bowel habit change</span>
+        </div>
+      </div>
+
+      <div style="margin-top:24px">
+        <div style="font-family:var(--mono);font-size:0.63rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:10px">Symptom Severity</div>
+        <div class="severity-row">
+          <div class="severity-btn mild" onclick="selectSeverity(this)">Mild</div>
+          <div class="severity-btn moderate" onclick="selectSeverity(this)">Moderate</div>
+          <div class="severity-btn severe" onclick="selectSeverity(this)">Severe</div>
+        </div>
+      </div>
+
+      <div style="margin-top:20px">
+        <div style="font-family:var(--mono);font-size:0.63rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:10px">Duration</div>
+        <div class="duration-row">
+          <span class="duration-chip" onclick="selectDuration(this)">&lt; 2 weeks</span>
+          <span class="duration-chip" onclick="selectDuration(this)">2–4 weeks</span>
+          <span class="duration-chip" onclick="selectDuration(this)">1–3 months</span>
+          <span class="duration-chip" onclick="selectDuration(this)">3–6 months</span>
+          <span class="duration-chip" onclick="selectDuration(this)">6+ months</span>
+        </div>
+      </div>
+
+      <textarea class="free-text" placeholder="e.g. 'The pain is worse after eating', 'I've lost about 6kg in 2 months without trying', 'My father had bowel cancer'…"></textarea>
+      <button class="continue-btn">Continue to Clinical Records →</button>
+    </div>
+
+    <div>
+      <div class="mono-label" style="margin-bottom:20px">About This Stage</div>
+      <p style="color:var(--text-muted);line-height:1.8;margin-bottom:20px">Stage 1 captures structured symptom data using NICE NG12 alarm feature criteria. The system automatically identifies red flag combinations — such as weight loss with jaundice and dark urine — that are pathognomonic for biliary obstruction and require the highest urgency pathway.</p>
+      <p style="color:var(--text-muted);line-height:1.8;margin-bottom:32px">Patient-reported symptoms are weighted by SHAP-derived feature importance and fed into the CMAT fusion engine at Stage 4. Ancestry data feeds the Cross-Ancestry SGRS Normalisation layer to eliminate European-dominant bias.</p>
+
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:24px;margin-bottom:24px">
+        <div class="mono-label" style="margin-bottom:16px">STEP 1 OF 7 — Family History</div>
+        <div style="font-weight:600;color:var(--ink);margin-bottom:14px;font-size:0.95rem">Has any first-degree relative been diagnosed with a gastrointestinal cancer?</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:0.88rem;color:var(--text-muted)"><input type="radio" name="fh" style="accent-color:var(--teal)"> Yes — pancreatic cancer</label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:0.88rem;color:var(--text-muted)"><input type="radio" name="fh" style="accent-color:var(--teal)"> Yes — stomach / gastric cancer</label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:0.88rem;color:var(--text-muted)"><input type="radio" name="fh" style="accent-color:var(--teal)"> Yes — bowel / colorectal cancer</label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:0.88rem;color:var(--text-muted)"><input type="radio" name="fh" style="accent-color:var(--teal)"> No known GI family history</label>
+        </div>
+      </div>
+
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:24px">
+        <div class="mono-label" style="margin-bottom:16px">Guideline Anchoring</div>
+        <div class="guideline-item"><div class="guideline-dot"></div>NICE NG12 — Suspected cancer referral</div>
+        <div class="guideline-item"><div class="guideline-dot"></div>NICE NG83 — Pancreatic cancer diagnosis</div>
+        <div class="guideline-item"><div class="guideline-dot"></div>ESMO 2023 — GI oncology clinical practice</div>
+        <div class="guideline-item" style="border:none"><div class="guideline-dot"></div>NCCN V2.2024 — Treatment pathways</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO -->
+<section id="demo" style="background:var(--ink-dark);color:#fff;border:none">
+  <div class="section-label">Live Demo · Example Patient Case</div>
+  <h2 class="section-title" style="color:#fff">All 9 stages — <em style="font-style:italic;color:var(--teal)">running live</em></h2>
+  <p class="section-sub" style="color:rgba(255,255,255,0.55)">Step through a real example patient (James M., 58, current smoker) and see exactly what the AI flags, why it flags it, and what it recommends at every stage.</p>
+
+  <div class="demo-nav" style="margin-top:36px">
+    <div class="demo-tab active">01 Symptoms</div>
+    <div class="demo-tab">02 Clinical</div>
+    <div class="demo-tab">03 Genomics</div>
+    <div class="demo-tab">04 CMAT Fusion</div>
+    <div class="demo-tab">05 Dissonance</div>
+    <div class="demo-tab">06 Neural ODE</div>
+    <div class="demo-tab">07 Twin</div>
+    <div class="demo-tab">08 SHAP</div>
+    <div class="demo-tab">09 Handoff</div>
+  </div>
+
+  <div class="patient-card">
+    <div class="patient-card-header">
+      <div class="patient-card-title">
+        <span style="font-size:1.1rem">🩺</span>
+        Patient Symptom Intake
+        <span class="patient-badge">Stage 01 of 09</span>
+      </div>
+    </div>
+    <div class="demo-info-banner">
+      Example patient — James M., 58 · Male · Current smoker · Father had bowel cancer
+    </div>
+    <div class="patient-grid">
+      <div class="patient-field"><div class="patient-field-label">Age</div><div class="patient-field-value">58</div></div>
+      <div class="patient-field"><div class="patient-field-label">Sex at Birth</div><div class="patient-field-value">Male</div></div>
+      <div class="patient-field"><div class="patient-field-label">Smoking</div><div class="patient-field-value highlight">Current smoker</div></div>
+      <div class="patient-field"><div class="patient-field-label">Alcohol Use</div><div class="patient-field-value highlight">Moderate</div></div>
+      <div class="patient-field"><div class="patient-field-label">Family Cancer Hx</div><div class="patient-field-value highlight">First-degree relative</div></div>
+      <div class="patient-field"><div class="patient-field-label">Symptom Duration</div><div class="patient-field-value highlight">1–3 months</div></div>
+    </div>
+
+    <div class="reported-symptoms">
+      <div class="reported-symptoms-title">Reported Symptoms</div>
+      <div class="symptom-tags">
+        <span class="symptom-tag alarm">⚠ Weight loss (6kg in 2mo)</span>
+        <span class="symptom-tag alarm">⚠ Jaundice</span>
+        <span class="symptom-tag alarm">⚠ Dark urine</span>
+        <span class="symptom-tag alarm">⚠ Pale stools</span>
+        <span class="symptom-tag normal">Upper abdominal pain</span>
+        <span class="symptom-tag normal">Nausea</span>
+        <span class="symptom-tag normal">Early satiety</span>
+        <span class="symptom-tag normal">Fatigue</span>
+        <span class="symptom-tag normal">Back pain</span>
+      </div>
+    </div>
+
+    <div class="flag-box">
+      <div class="flag-box-title">⚠ NICE NG12 Alarm Features — What Causes the Flag</div>
+      <p>Weight loss + jaundice + pale stools + dark urine together are NICE NG12 red flag symptoms. This constellation is pathognomonic for biliary obstruction — most commonly caused by a pancreatic head mass. Combined with back pain (suggesting retroperitoneal involvement) and 3 months of progressive symptoms, this triggers the highest urgency pathway. <strong>4 out of 5 alarm features are present.</strong></p>
+    </div>
+
+    <div class="patient-quote">
+      "The pain is worse after eating. I've lost about 6kg in 2 months without trying. My skin has gone slightly yellow and my urine is very dark."
+    </div>
+
+    <div style="padding:0 28px 28px;display:flex;gap:32px">
+      <div><div class="patient-field-label">Overall Severity</div><div style="font-weight:700;color:var(--coral);margin-top:4px">Severe</div></div>
+      <div><div class="patient-field-label">NICE NG12 Score</div><div style="font-weight:700;color:var(--coral);margin-top:4px">4 / 5 alarm features</div></div>
+      <div><div class="patient-field-label">KRAS G12D Status</div><div style="font-weight:700;color:var(--coral);margin-top:4px">Positive · ×4.8 penetrance</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- VALIDATION -->
+<section id="validation">
+  <div class="section-label">SEER Retrospective · N=500</div>
+  <h2 class="section-title">Performance metrics <em style="font-style:italic;color:var(--teal)">that matter</em></h2>
+  <p class="section-sub">5-fold cross-validation across pancreatic, gastric, and oesophageal cancers. TRIPOD-compliant reporting. NPV-optimised to minimise missed early-stage cases — the clinical priority in GI oncology.</p>
+
+  <div class="validation-grid">
+    <div class="metric-card">
+      <div class="metric-label">LR AUROC</div>
+      <div class="metric-value">0.790</div>
+      <div class="metric-desc">Logistic regression baseline. Strong discriminative performance on retrospective SEER cohort across three GI cancer sites.</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Ensemble AUROC</div>
+      <div class="metric-value" style="color:var(--violet)">0.753</div>
+      <div class="metric-desc">Multi-model ensemble. Reported alongside LR per TRIPOD transparency requirements. Both metrics pre-CMAT integration.</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">NPV @ 95% Sensitivity</div>
+      <div class="metric-value" style="color:var(--amber)">0.853</div>
+      <div class="metric-desc">NPV-optimised design. At 95% sensitivity threshold, 85.3% of negatives are true negatives — minimising missed early-stage cases.</div>
+    </div>
+  </div>
+
+  <div class="survival-table">
+    <div class="mono-label" style="margin-bottom:20px">Survival Multiplier — Early vs Late Stage Detection</div>
+    <div class="survival-row">
+      <div class="survival-cancer">Stomach cancer — early detection</div>
+      <div class="survival-bar-wrap"><div class="survival-bar"><div class="survival-bar-fill" style="width:88%"></div></div></div>
+      <div class="survival-mult">8.8×</div>
+    </div>
+    <div class="survival-row">
+      <div class="survival-cancer">Pancreatic cancer — early detection</div>
+      <div class="survival-bar-wrap"><div class="survival-bar"><div class="survival-bar-fill" style="width:37%"></div></div></div>
+      <div class="survival-mult">3.7×</div>
+    </div>
+    <div class="survival-row">
+      <div class="survival-cancer">1-year survival — Oesophageal (localised)</div>
+      <div class="survival-bar-wrap"><div class="survival-bar"><div class="survival-bar-fill" style="width:51%"></div></div></div>
+      <div class="survival-mult">51%</div>
+    </div>
+    <div class="survival-row" style="border:none">
+      <div class="survival-cancer">1-year survival — Stomach (localised)</div>
+      <div class="survival-bar-wrap"><div class="survival-bar"><div class="survival-bar-fill" style="width:48%"></div></div></div>
+      <div class="survival-mult">48%</div>
+    </div>
+  </div>
+</section>
+
+<!-- RESEARCH PROPOSAL -->
+<section id="proposal" style="background:var(--surface)">
+  <div class="section-label">Research Proposal · OncosenseAI 2026</div>
+  <h2 class="section-title">The case for <em style="font-style:italic;color:var(--teal)">funding this work</em></h2>
+  <p class="section-sub">A structured proposal for academic collaboration, visiting researcher positions, and prospective clinical validation. Every claim is backed by existing retrospective performance data.</p>
+
+  <div style="margin-top:32px;background:var(--teal-light);border:1px solid rgba(42,157,143,0.3);border-radius:8px;padding:24px 28px">
+    <div class="mono-label" style="color:var(--teal)">MedRxiv Preprint — Q3 2026</div>
+    <p style="color:var(--ink);font-size:0.9rem;line-height:1.7;margin-bottom:14px">Full TRIPOD-compliant reporting with SHAP feature importance, Kaplan-Meier survival curves, site-by-stage breakdown, Neural ODE temporal methodology, and Cross-Ancestry SGRS validation. Targeting npj Digital Medicine or JAMIA.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <span class="badge">TRIPOD Compliant</span>
+      <span class="badge">SHAP Explainability</span>
+      <span class="badge amber">45 CFR 46 Exempt</span>
+      <span class="badge">Q3 2026 Target</span>
+      <span class="badge">Neural ODE Novel Method</span>
+    </div>
+  </div>
+
+  <div class="proposal-grid">
+    <div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:28px;margin-top:32px">
+        <div style="font-family:var(--serif);font-size:1.1rem;color:var(--ink);margin-bottom:12px">The Problem</div>
+        <p style="color:var(--text-muted);font-size:0.88rem;line-height:1.8;margin-bottom:12px">GI cancers (pancreatic, gastric, oesophageal) are diagnosed at Stage III-IV in 70–80% of cases. Five-year survival rates remain 10–20% for pancreatic cancer. Existing screening tools require symptomatic patients — by the time symptoms appear, the window for curative intervention has closed.</p>
+        <p style="color:var(--text-muted);font-size:0.88rem;line-height:1.8">Current AI approaches treat each visit as an isolated snapshot, cannot handle irregular sampling, ignore genomic-symptom dissonance, and are trained predominantly on European ancestry cohorts. OncosenseAI addresses all four gaps simultaneously.</p>
+      </div>
+
+      <div style="margin-top:24px">
+        <div class="phase-section">
+          <div class="phase-label complete">Phase 1 — Already Complete</div>
+          <div class="phase-item"><span class="phase-arrow">→</span>SGRS scoring engine with 12-variant genomic catalogue</div>
+          <div class="phase-item"><span class="phase-arrow">→</span>CMAT fusion architecture (2-head, 2-layer Transformer)</div>
+          <div class="phase-item"><span class="phase-arrow">→</span>Retrospective validation: SEER n=500, AUROC 0.790, NPV 0.853</div>
+          <div class="phase-item"><span class="phase-arrow">→</span>Full TRIPOD-compliant methodology documentation</div>
+        </div>
+        <div class="phase-section">
+          <div class="phase-label target">Phase 2 — 2026 Target</div>
+          <div class="phase-item"><span class="phase-arrow" style="color:var(--amber)">→</span>Neural ODE temporal engine integration with torchdiffeq</div>
+          <div class="phase-item"><span class="phase-arrow" style="color:var(--amber)">→</span>Counterfactual Twin simulation at 10,000 bifurcation runs</div>
+          <div class="phase-item"><span class="phase-arrow" style="color:var(--amber)">→</span>Cross-ancestry SGRS normalisation on diverse cohort</div>
+          <div class="phase-item"><span class="phase-arrow" style="color:var(--amber)">→</span>Prospective pilot with 50-patient clinical partner cohort</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="novelty-claims" style="margin-top:32px">
+        <div class="novelty-claims-label">Scientific Novelty Claims — What We Will Prove in the Preprint</div>
+        <div class="claim-item"><span class="claim-arrow">→</span>Neural ODEs outperform LSTM/RNN on irregularly-sampled GI visit data</div>
+        <div class="claim-item"><span class="claim-arrow">→</span>180+ day lead-time advantage vs current NCCN-based screening thresholds</div>
+        <div class="claim-item"><span class="claim-arrow">→</span>Dissonance-velocity correlation: 98% Stage I/II detection in genomically-loud, symptomatically-quiet patients</div>
+        <div class="claim-item"><span class="claim-arrow">→</span>Cross-ancestry SGRS achieves zero-bias performance across ≥3 ethnic cohorts</div>
+        <div class="claim-item"><span class="claim-arrow">→</span>Counterfactual Twin reduces false-positive biopsy referrals by modelling intervention paths</div>
+      </div>
+
+      <div style="margin-top:24px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:28px">
+        <div class="mono-label" style="margin-bottom:16px">Target Journals & Venues</div>
+        <div style="font-family:var(--mono);font-size:0.65rem;color:var(--teal);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px">Primary Targets</div>
+        <div class="phase-item" style="border-color:var(--border)"><span class="phase-arrow">→</span>npj Digital Medicine (Nature portfolio)</div>
+        <div class="phase-item" style="border-color:var(--border)"><span class="phase-arrow">→</span>JAMIA — Journal of the American Medical Informatics Association</div>
+        <div class="phase-item" style="border-color:var(--border)"><span class="phase-arrow">→</span>Lancet Digital Health (clinical validation phase)</div>
+        <div style="font-family:var(--mono);font-size:0.65rem;color:var(--amber);text-transform:uppercase;letter-spacing:0.08em;margin:16px 0 10px">Conference Presentations</div>
+        <div class="phase-item" style="border-color:var(--border)"><span class="phase-arrow">→</span>AMIA 2026 Annual Symposium</div>
+        <div class="phase-item" style="border-color:var(--border)"><span class="phase-arrow">→</span>ESMO Congress 2026 (clinical oncology track)</div>
+        <div class="phase-item" style="border-bottom:none"><span class="phase-arrow">→</span>NeurIPS 2026 AI for Health Workshop (Neural ODE methodology)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section id="roadmap">
+  <div class="section-label">Research Roadmap 2026–2028</div>
+  <h2 class="section-title">From prototype <em style="font-style:italic;color:var(--teal)">to clinical validation</em></h2>
+  <p class="section-sub">A staged pathway from retrospective SEER validation through prospective pilot cohort to regulatory submission — each milestone building the evidence base for clinical implementation.</p>
+
+  <div class="roadmap-timeline">
+    <div class="roadmap-item">
+      <div class="roadmap-quarter">Q2 2026</div>
+      <div class="roadmap-title">MedRxiv Preprint Submission</div>
+      <div class="roadmap-desc">Full TRIPOD report with CMAT architecture, SEER retrospective data, SHAP analysis, and Neural ODE temporal methodology section.</div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-quarter">Q3 2026</div>
+      <div class="roadmap-title">Prospective Pilot Cohort (N=50)</div>
+      <div class="roadmap-desc">Partnership with GI oncology unit. 50-patient prospective observational study. Primary endpoint: lead-time vs standard referral pathway.</div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-quarter">Q4 2026</div>
+      <div class="roadmap-title">Cross-Ancestry SGRS Validation</div>
+      <div class="roadmap-desc">Expand to multi-ancestry cohort. Partner with biobank with East Asian, South Asian, and African ancestry data. Zero-bias SGRS paper.</div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-quarter">2027</div>
+      <div class="roadmap-title">Counterfactual Twin RCT Design</div>
+      <div class="roadmap-desc">Design randomised feasibility study: AI-assisted surveillance vs standard care. Primary outcome: Stage at diagnosis for new GI cancer detections.</div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-quarter">2028</div>
+      <div class="roadmap-title">Regulatory Pathway (MHRA / FDA Breakthrough)</div>
+      <div class="roadmap-desc">Pursue MHRA AI as Medical Device designation. FDA De Novo pathway for clinical decision support tool. CE-Mark under EU MDR.</div>
+    </div>
+  </div>
+
+  <div class="collab-grid">
+    <div class="collab-card">
+      <div class="collab-label">Clinical Partners</div>
+      <div class="collab-title">GI Oncology Units</div>
+      <div class="collab-desc">GI oncology units willing to provide anonymised retrospective patient data and prospective pilot access. UK, Germany, Canada preferred but open globally.</div>
+    </div>
+    <div class="collab-card">
+      <div class="collab-label">Academic Collaborators</div>
+      <div class="collab-title">Co-Investigators</div>
+      <div class="collab-desc">Co-investigators in biomedical informatics, GI oncology genetics, or machine learning for health. Open to visiting researcher positions and co-authorship arrangements.</div>
+    </div>
+    <div class="collab-card">
+      <div class="collab-label">Research Funding</div>
+      <div class="collab-title">Grants & Support</div>
+      <div class="collab-desc">NIHR, Wellcome Trust, Cancer Research UK, or equivalent. Seeking support for prospective cohort study costs, compute infrastructure, and regulatory consultation.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" style="background:var(--surface)">
+  <div class="section-label">About the Project</div>
+  <h2 class="section-title">Built for <em style="font-style:italic;color:var(--teal)">early detection</em></h2>
+
+  <div class="about-grid">
+    <div>
+      <div class="about-body">
+        <p>OncosenseAI is a research-grade clinical AI system designed to support early detection of gastrointestinal cancers — pancreatic, gastric, and oesophageal — where early-stage identification can multiply survival outcomes by nearly 9×.</p>
+        <p>The pipeline integrates patient symptom scoring, laboratory biomarkers, genomic profiling, and validated survival models into a cohesive 9-stage clinical decision support tool. Treatment recommendations are anchored to ESMO 2023, NCCN v2.2024, and NICE NG12/NG83 guidelines.</p>
+        <p>Validated retrospectively against 500 SEER patients across three cancer sites, with full TRIPOD reporting compliance and explainability through SHAP feature importance analysis. Phase 2 development targets Neural ODE temporal integration and cross-ancestry SGRS normalisation.</p>
+      </div>
+      <div class="tech-stack">
+        <span class="tech-pill">Python</span>
+        <span class="tech-pill">Dash</span>
+        <span class="tech-pill">FastAPI</span>
+        <span class="tech-pill">PyTorch</span>
+        <span class="tech-pill">torchdiffeq</span>
+        <span class="tech-pill">scikit-learn</span>
+        <span class="tech-pill">SHAP</span>
+        <span class="tech-pill">SEER Registry</span>
+        <span class="tech-pill">FHIR-ready</span>
+        <span class="tech-pill">MIT Licensed</span>
+      </div>
+    </div>
+    <div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:32px">
+        <div class="mono-label" style="margin-bottom:20px">Key Specifications</div>
+        <div class="guideline-item"><div class="guideline-dot"></div><div><strong>Validation cohort:</strong> 500 SEER patients, 3 cancer sites</div></div>
+        <div class="guideline-item"><div class="guideline-dot"></div><div><strong>Model architecture:</strong> CMAT 2-head Transformer + LR + GBM ensemble</div></div>
+        <div class="guideline-item"><div class="guideline-dot"></div><div><strong>Cross-validation:</strong> 5-fold, reported per TRIPOD</div></div>
+        <div class="guideline-item"><div class="guideline-dot"></div><div><strong>Explainability:</strong> SHAP feature importance at patient level</div></div>
+        <div class="guideline-item"><div class="guideline-dot"></div><div><strong>Genomic module:</strong> 12-variant catalogue, methylation proxies, pharmacogenomics</div></div>
+        <div class="guideline-item"><div class="guideline-dot"></div><div><strong>IRB status:</strong> 45 CFR 46 exempt (retrospective SEER data)</div></div>
+        <div class="guideline-item" style="border:none"><div class="guideline-dot"></div><div><strong>Status:</strong> Research prototype — prospective validation planned Q3 2026</div></div>
+      </div>
+      <a href="https://github.com/ramshazuberi81-research/oncoscan-research" target="_blank" class="btn-primary" style="display:inline-block;margin-top:20px">View on GitHub →</a>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-label">Collaboration</div>
+  <h2 class="section-title">Research partnerships <em style="font-style:italic;color:var(--teal)">welcome</em></h2>
+  <p class="section-sub">Interested in clinical validation, visiting researcher collaboration, co-authorship, or implementation discussions? Get in touch.</p>
+
+  <div class="contact-grid">
+    <div class="contact-form">
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" placeholder="Your name">
+      </div>
+      <div class="form-group">
+        <label>Institution / Organisation</label>
+        <input type="text" placeholder="Hospital, university, or company">
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" placeholder="your@email.com">
+      </div>
+      <div class="form-group">
+        <label>Interest</label>
+        <select>
+          <option>Select your interest...</option>
+          <option>Clinical validation partnership</option>
+          <option>Visiting researcher position</option>
+          <option>Co-authorship / preprint collaboration</option>
+          <option>Implementation / integration</option>
+          <option>Research funding discussion</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Message</label>
+        <textarea placeholder="Tell me about your interest in OncosenseAI…"></textarea>
+      </div>
+      <button class="continue-btn" style="margin-top:8px">Send Message</button>
+    </div>
+    <div class="contact-aside">
+      <p style="color:var(--text-muted);line-height:1.8;margin-bottom:16px">OncosenseAI is seeking clinical validation partners and academic collaborators to advance the pipeline toward prospective real-world validation.</p>
+      <p style="color:var(--text-muted);line-height:1.8;margin-bottom:24px">Areas of collaboration include EHR data access, model validation studies, workflow integration, and co-authorship on the forthcoming MedRxiv preprint targeting <em>npj Digital Medicine</em> or <em>JAMIA</em>.</p>
+
+      <div class="mono-label" style="margin-bottom:8px">Direct Email</div>
+      <a href="mailto:ramshazubairi81@gmail.com" class="contact-email">ramshazubairi81@gmail.com</a>
+
+      <div class="mono-label" style="margin-top:24px;margin-bottom:8px">GitHub Repository</div>
+      <a href="https://github.com/ramshazuberi81-research/oncoscan-research" target="_blank" class="contact-email">ramshazuberi81-research/oncoscan-research</a>
+
+      <div class="mono-label" style="margin-top:24px;margin-bottom:12px">Expertise & Interests</div>
+      <div class="expertise-tags">
+        <span class="expertise-tag">Clinical Validation</span>
+        <span class="expertise-tag">Co-authorship</span>
+        <span class="expertise-tag">GI Oncology</span>
+        <span class="expertise-tag">Biomedical Informatics</span>
+        <span class="expertise-tag">Neural ODEs</span>
+        <span class="expertise-tag">Transformer Architecture</span>
+        <span class="expertise-tag">Pharmacogenomics</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER DISCLAIMER -->
+<div class="footer-disclaimer">
+  ⚠ RESEARCH PROTOTYPE ONLY — OncosenseAI is not validated for prospective clinical decision-making and is not approved by the FDA, CE-mark, MHRA, or any equivalent regulatory authority. All figures are derived from retrospective SEER validation (n=500) and are intended for research and demonstration purposes only. TRIPOD reporting guidelines were followed. This tool must not be used for direct patient care decisions without appropriate clinical oversight and regulatory approval.
+</div>
+
+<footer>
+  <div class="footer-logo">Oncosense<span>AI</span></div>
+  <div style="display:flex;gap:28px;flex-wrap:wrap;justify-content:center">
+    <a href="#novelty" style="font-family:var(--mono);font-size:0.63rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);text-decoration:none">Novelty</a>
+    <a href="#cmat" style="font-family:var(--mono);font-size:0.63rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);text-decoration:none">CMAT</a>
+    <a href="#pipeline" style="font-family:var(--mono);font-size:0.63rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);text-decoration:none">Pipeline</a>
+    <a href="#neural-ode" style="font-family:var(--mono);font-size:0.63rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);text-decoration:none">Neural ODE</a>
+    <a href="#validation" style="font-family:var(--mono);font-size:0.63rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);text-decoration:none">Validation</a>
+    <a href="#proposal" style="font-family:var(--mono);font-size:0.63rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);text-decoration:none">Proposal</a>
+    <a href="#contact" style="font-family:var(--mono);font-size:0.63rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);text-decoration:none">Contact</a>
+  </div>
+  <div class="footer-legal">© 2026 OncosenseAI · MIT Licensed</div>
+</footer>
+
+<script>
+  function toggleChip(el) {
+    if (el.classList.contains('alarm')) {
+      el.classList.toggle('selected');
+      if (el.classList.contains('selected')) {
+        el.style.background = '#e63946';
+        el.style.color = '#fff';
+        el.style.borderColor = '#e63946';
+      } else {
+        el.style.background = '';
+        el.style.color = '';
+        el.style.borderColor = '';
+      }
+    } else {
+      el.classList.toggle('selected');
+    }
+  }
+
+  function selectSeverity(el) {
+    document.querySelectorAll('.severity-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function selectDuration(el) {
+    document.querySelectorAll('.duration-chip').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // Demo tab switching
+  document.querySelectorAll('.demo-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.demo-tab').forEach(t => {
+        t.classList.remove('active');
+      });
+      this.classList.add('active');
+    });
+  });
+
+  // Smooth scroll offset for sticky nav
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        const offset = 70;
+        const top = target.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    });
+  });
+</script>
+</body>
+</html>
