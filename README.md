@@ -1,26 +1,22 @@
-# README sections to paste into the OncosenseAI repo
 
-Replace the matching sections in README.md. Delete the "Competitive Landscape" section and the "$0 tools" line entirely.
 
----
 
-## 1. Title and tagline (replace the top block)
 
 # OncosenseAI: Clinical AI Prototype for Early Abdominal Cancer Triage
 > Symptom risk stratification · Image analysis · Guideline-based treatment matching · Clinical reporting
 
-*Built by a clinician-researcher. Open-source research prototype.*
-Ramsha Zuberi · ramshazubairi81@gmail.com · [LinkedIn](ADD-YOUR-LINKEDIN-URL) · [GitHub](https://github.com/ramshazuberi81-research)
+Built by a clinician-researcher. Open-source research prototype.
+Ramsha Zuberi · ramshazubairi81@gmail.com · [LinkedIn](https://www.linkedin.com/in/ramsha-zuberi-26727438b/?isSelfProfile=true) · [GitHub](https://github.com/ramshazuberi81-research)
 
 ---
 
-## 2. The Problem (replace the city table and the "$0" line)
+2. The Problem 
 
 Abdominal cancers are often diagnosed at a late stage, partly because early symptoms such as fatigue, weight loss and abdominal pain are non-specific and are frequently attributed to benign causes in primary care. OncosenseAI explores whether structured symptom data, simple image analysis and guideline rules can help prioritise which patients should be investigated sooner.
 
 ---
 
-## 3. Validation (rename the "SEER Validation" heading and add this note above the tables)
+## 3. Validation 
 
 ## Initial Validation on SEER Data (n=500)
 
@@ -31,7 +27,7 @@ Keep the existing results tables (AUROC, NPV, PPV, specificity at 95% sensitivit
 
 ---
 
-## 4. Limitations (add as a new section, directly after Validation)
+## 4. Limitations 
 
 ## Limitations
 
@@ -43,7 +39,7 @@ Keep the existing results tables (AUROC, NPV, PPV, specificity at 95% sensitivit
 
 ---
 
-## 5. Roadmap (replace the whole roadmap list)
+
 
 ## Roadmap
 
@@ -56,7 +52,7 @@ Keep the existing results tables (AUROC, NPV, PPV, specificity at 95% sensitivit
 
 ---
 
-## 6. Seeking Collaboration (replace the table)
+## 6. Seeking Collaboration 
 
 ## Open to Collaboration
 
@@ -70,12 +66,6 @@ Keep the existing results tables (AUROC, NPV, PPV, specificity at 95% sensitivit
 
 ---
 
-## 7. Repo cleanup checklist
 
-- [ ] Delete `index_v1_archive.html`
-- [ ] Rename `requirements (1).txt` to `requirements.txt`
-- [ ] Rename `OncoScan_Colab_RunThis (2).ipynb` to `OncoScan_Colab_RunThis.ipynb`
-- [ ] Rename the two `OncosenseAI_Module*_(1).ipynb` files to drop the `(1)`
-- [ ] Rename ` orchestrator.py` (it has a leading space in the filename)
 - [ ] Replace every `#` placeholder link (LinkedIn, GitHub, Live Demo) with a real URL
 - [ ] Remove the duplicate `Readme.md.html` if it is not needed
